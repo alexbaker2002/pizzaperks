@@ -17,7 +17,6 @@ As part of our menu, we offer a selection of specialty pizzas to tantalize your 
 HTML/CSS
 JavaScript
 Bootstrap (for front-end styling)
-SQL Server (for database management)
 Getting Started
 
 ### To run this project locally, follow these steps:
@@ -35,3 +34,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ### Acknowledgments
 Hat tip to OpenAI for their language model, which assisted in generating this README.
+
+Theme Waggon for template
+* * https://themewagon.com/themes/free-bootstrap-4-html5-pizza-website-template-pizza/
+
