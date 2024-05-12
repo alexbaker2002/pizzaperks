@@ -124,6 +124,7 @@ namespace pizzaperks.Areas.Identity.Pages.Account
             {
                 var user = new PZUser { FirstName = Input.FirstName, LastName = Input.LastName };
                 Cart cart = await _cartService.CreateNewCartAsync(new());
+                //TODO: Set Role of User??
                 if (cart != null)
                 {
                     user.CartId = cart.Id;

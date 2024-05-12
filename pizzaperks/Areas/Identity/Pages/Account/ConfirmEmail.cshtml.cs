@@ -11,14 +11,9 @@ using System.Text;
 
 namespace pizzaperks.Areas.Identity.Pages.Account
 {
-    public class ConfirmEmailModel : PageModel
+    public class ConfirmEmailModel(UserManager<PZUser> userManager) : PageModel
     {
-        private readonly UserManager<PZUser> _userManager;
-
-        public ConfirmEmailModel(UserManager<PZUser> userManager)
-        {
-            _userManager = userManager;
-        }
+        private readonly UserManager<PZUser> _userManager = userManager;
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
