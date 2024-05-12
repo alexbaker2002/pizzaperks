@@ -11,7 +11,7 @@
 
         // Ingredients
 
-
+        public virtual ICollection<Ingredient> Ingredients { get; set; } = new HashSet<Ingredient>();
 
 
 

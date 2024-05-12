@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using pizzaperks.Models;
+using pizzaperks.Services.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
 namespace pizzaperks.Areas.Identity.Pages.Account
@@ -20,13 +21,15 @@ namespace pizzaperks.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<PZUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly ICartService _cartService;
 
         public RegisterModel(
             UserManager<PZUser> userManager,
             IUserStore<PZUser> userStore,
             SignInManager<PZUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ICartService cartService)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -34,6 +37,7 @@ namespace pizzaperks.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _cartService = cartService;
         }
 
         /// <summary>
@@ -119,6 +123,16 @@ namespace pizzaperks.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = new PZUser { FirstName = Input.FirstName, LastName = Input.LastName };
+                Cart cart = await _cartService.CreateNewCartAsync(new());
+                if (cart != null)
+                {
+                    user.CartId = cart.Id;
+                }
+                else
+                {
+                    user.CartId = -1;
+                }
+
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -145,6 +159,7 @@ namespace pizzaperks.Areas.Identity.Pages.Account
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
+                        await _signInManager.SignInAsync(user, isPersistent: false);
                         return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
                     }
                     else

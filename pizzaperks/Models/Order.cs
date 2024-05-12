@@ -1,4 +1,4 @@
-﻿using pizzaperks.Models.Enums;
+﻿using System.ComponentModel;
 
 namespace pizzaperks.Models
 {
@@ -11,7 +11,10 @@ namespace pizzaperks.Models
 
         public string? OrderUserId { get; set; }
 
-        public OrderStatus OrderStatus { get; set; }
+        public OrderStatus? OrderStatus { get; set; }
+
+        [DisplayName("Order Date/Time")]
+        public DateTime OrderDateTime { get; set; }
 
 
     }

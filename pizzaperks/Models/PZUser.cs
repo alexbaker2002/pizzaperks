@@ -12,9 +12,8 @@ namespace pizzaperks.Models
 
         [NotMapped]
         public string FullName { get { return $"{FirstName} {LastName}"; } }
-
-
-
+        public int CartId { get; set; }
+        public virtual ICollection<Order> Orders { get; set; } = new HashSet<Order>();
 
 
     }

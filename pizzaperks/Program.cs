@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using pizzaperks.Data;
 using pizzaperks.Models;
+using pizzaperks.Services;
+using pizzaperks.Services.Factories;
+using pizzaperks.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +20,15 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddIdentity<PZUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddDefaultUI()    // creates the default UI
     .AddDefaultTokenProviders()   // creates tokens
+    .AddClaimsPrincipalFactory<PZUserClaimsPrincipalFactory>() // adds claims to Identity
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+// custom services
+builder.Services.AddScoped<ICartService, CartService>();
+
+
+
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
