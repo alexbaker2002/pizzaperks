@@ -1,4 +1,7 @@
-﻿@inject SignInManager<IdentityUser> SignInManager
+﻿@using pizzaperks.Models;
+
+
+@inject SignInManager<PZUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }
