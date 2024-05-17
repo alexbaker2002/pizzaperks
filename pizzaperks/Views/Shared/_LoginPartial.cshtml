@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using pizzaperks.Models.Enums;
 @inject SignInManager<PZUser> SignInManager
 @inject UserManager<PZUser> UserManager
 
@@ -13,9 +14,13 @@
     <li class="nav-item">
         <a  class="nav-link text-light" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">@(UserInfo!.FullName ?? User.Identity!.Name)</a>
     </li>
-        <li class="nav-item">
-            <a class="nav-link text-light" asp-controller="Carts" asp-action="Index" title="Cart"><span class="icon-opencart"></span></a>
-        </li>
+        @if (User.IsInRole(nameof(Roles.Customer)))
+        {
+            <li class="nav-item">
+                <a class="nav-link text-light" asp-controller="Cart" asp-action="Index" title="Cart"><span class="icon-opencart"></span></a>
+            </li>
+        }
+
 
 
 }

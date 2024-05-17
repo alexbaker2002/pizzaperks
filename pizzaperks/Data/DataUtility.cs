@@ -1,18 +1,21 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using pizzaperks.Models;
 using pizzaperks.Models.Enums;
 
 namespace pizzaperks.Data
 {
-    public class DataUtility
+    public class DataUtility()
     {
-        public DataUtility() { }
 
-        public static async Task ManageDataAsync(IHost host)
+
+
+        public static async Task ManageDataAsync(WebApplication app)
         {
 
 
-            using var svcScope = host.Services.CreateScope();
+
+            using var svcScope = app.Services.CreateScope();
             var svcProvider = svcScope.ServiceProvider;
 
             //Service: An instance of DatabaseManager
@@ -23,7 +26,12 @@ namespace pizzaperks.Data
             var userManagerSvc = svcProvider.GetRequiredService<UserManager<PZUser>>();
             //Migration: This is the programmatic equivalent to Update-Database
 
+
+
+            await dbContextSvc.Database.MigrateAsync();
+
             await SeedRolesAsync(roleManagerSvc);
+            // await SeedCart();
             await SeedDemoUsersAsync(userManagerSvc);
 
 
@@ -43,19 +51,23 @@ namespace pizzaperks.Data
             //Seed Demo Manager User
             var defaultUser = new PZUser
             {
-                UserName = "Dustin Manager",
+                UserName = "dman@pizzaperks.com",
                 Email = "dman@pizzaperks.com",
                 FirstName = "Dustin",
                 LastName = "Manager",
                 EmailConfirmed = true,
+                CartId = -1
 
             };
             try
             {
+                var user = await userManager.FindByEmailAsync(defaultUser.Email);
+                if (user == null)
+                {
 
-                await userManager.CreateAsync(defaultUser, "Abc&123!");
-                await userManager.AddToRoleAsync(defaultUser, Roles.Manager.ToString());
-
+                    var testUser = await userManager.CreateAsync(defaultUser, "Fw%@P!ZZ@8");
+                    await userManager.AddToRoleAsync(defaultUser, Roles.Manager.ToString());
+                }
 
             }
             catch (Exception ex)
@@ -69,19 +81,22 @@ namespace pizzaperks.Data
             //Seed Demo Manager User
             var defaultCustomer = new PZUser
             {
-                UserName = "Christy Customer",
+                UserName = "christy@notmymail.com",
                 Email = "christy@notmymail.com",
                 FirstName = "Christy",
                 LastName = "Customer",
                 EmailConfirmed = true,
+                CartId = 1
 
             };
             try
             {
-
-                await userManager.CreateAsync(defaultCustomer, "Abc&123!");
-                await userManager.AddToRoleAsync(defaultCustomer, Roles.Customer.ToString());
-
+                var user = await userManager.FindByEmailAsync(defaultUser.Email);
+                if (user == null)
+                {
+                    await userManager.CreateAsync(defaultCustomer, "Fw%@P!ZZ@8");
+                    await userManager.AddToRoleAsync(defaultCustomer, Roles.Customer.ToString());
+                }
 
             }
             catch (Exception ex)

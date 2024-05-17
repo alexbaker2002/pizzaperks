@@ -25,13 +25,16 @@ builder.Services.AddIdentity<PZUser, IdentityRole>(options => options.SignIn.Req
 
 // custom services
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IPZRolesService, PZRolesService>();
 
 
 
 
 builder.Services.AddControllersWithViews();
 
+
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -63,4 +66,5 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
+await DataUtility.ManageDataAsync(app);
 app.Run();

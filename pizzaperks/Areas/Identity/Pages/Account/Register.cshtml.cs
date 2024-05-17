@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using pizzaperks.Models;
+using pizzaperks.Models.Enums;
+using pizzaperks.Services;
 using pizzaperks.Services.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
@@ -22,6 +24,7 @@ namespace pizzaperks.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly ICartService _cartService;
+        private readonly IPZRolesService _rolesService;
 
         public RegisterModel(
             UserManager<PZUser> userManager,
@@ -29,7 +32,8 @@ namespace pizzaperks.Areas.Identity.Pages.Account
             SignInManager<PZUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            ICartService cartService)
+            ICartService cartService,
+            PZRolesService pZRolesService)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -38,6 +42,7 @@ namespace pizzaperks.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _cartService = cartService;
+            _rolesService = pZRolesService;
         }
 
         /// <summary>
@@ -144,7 +149,8 @@ namespace pizzaperks.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-
+                    // assign every user to customer role
+                    await _rolesService.AddUserToRoleAsync(user, nameof(Roles.Customer));
 
                     //var userId = await _userManager.GetUserIdAsync(user);
                     // var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

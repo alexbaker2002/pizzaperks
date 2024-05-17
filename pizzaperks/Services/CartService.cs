@@ -1,7 +1,7 @@
-﻿using pizzaperks.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using pizzaperks.Data;
 using pizzaperks.Models;
 using pizzaperks.Services.Interfaces;
-
 
 namespace pizzaperks.Services
 {
@@ -9,6 +9,9 @@ namespace pizzaperks.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<CartService> _logger;
+
+
+
         public CartService(ApplicationDbContext context, ILogger<CartService> logger)
         {
             _context = context;
@@ -29,6 +32,26 @@ namespace pizzaperks.Services
                     return null!;
                 }
             return null!;
+        }
+
+        public async Task<Cart> GetCartWithItemsAsync(int? cartId)
+        {
+            //TODO: Left off Here!!
+            if (cartId is null)
+            {
+                return new Cart();
+            }
+
+
+            Cart? cart = await _context.Carts.FirstOrDefaultAsync(c => c.Id == cartId);
+            if (cart is null)
+            {
+                return new Cart();
+            }
+
+
+            return cart;
+
         }
     }
 }

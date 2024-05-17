@@ -15,11 +15,13 @@ namespace pizzaperks.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<PZUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly IConfiguration _config;
 
-        public LoginModel(SignInManager<PZUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<PZUser> signInManager, ILogger<LoginModel> logger, IConfiguration config)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _config = config;
         }
 
         /// <summary>
@@ -95,9 +97,31 @@ namespace pizzaperks.Areas.Identity.Pages.Account
             ReturnUrl = returnUrl;
         }
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+        public async Task<IActionResult> OnPostAsync(string returnUrl = null, string demoUser = null)
         {
             returnUrl ??= Url.Content("~/");
+
+            // Custom Demo Section
+            if (!string.IsNullOrEmpty(demoUser))
+            {
+
+                string email = _config[$"DemoIdentity:{demoUser}"];
+                string password = _config["DemoIdentity:DemoUserPassword"];
+
+                var result = await _signInManager.PasswordSignInAsync(email, password, false, lockoutOnFailure: false);
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation("Demo User logged in.");
+                    return RedirectToAction("Dashboard", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return Page();
+                }
+            }
+
+
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 

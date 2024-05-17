@@ -1,23 +1,42 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using pizzaperks.Data;
 using pizzaperks.Models;
+using pizzaperks.Services.Interfaces;
 
 namespace pizzaperks.Controllers
 {
-    public class CartsController : Controller
+    [Authorize]
+    public class CartController(ApplicationDbContext context, UserManager<PZUser> userManager, ICartService cartService) : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context = context;
+        private readonly UserManager<PZUser> _userManager = userManager ?? null!;
+        private readonly ICartService _cartService = cartService ?? null!;
 
-        public CartsController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
 
-        // GET: Carts
+        // GET: User Cart with Items
+
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Carts.ToListAsync());
+
+            if (_userManager == null)
+            {
+                return NotFound();
+            }
+            PZUser? user = await _userManager.GetUserAsync(User);
+
+            if (user is null)
+            {
+                return View(null);
+            }
+            int cartId = user!.CartId;
+
+            Cart cart = await _cartService.GetCartWithItemsAsync(cartId);
+
+
+            return View(cart.Products);
         }
 
         // GET: Carts/Details/5
@@ -44,21 +63,7 @@ namespace pizzaperks.Controllers
             return View();
         }
 
-        // POST: Carts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id")] Cart cart)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(cart);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(cart);
-        }
+
 
         // GET: Carts/Edit/5
         public async Task<IActionResult> Edit(int? id)
