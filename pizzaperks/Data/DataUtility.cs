@@ -31,8 +31,14 @@ namespace pizzaperks.Data
             await dbContextSvc.Database.MigrateAsync();
 
             await SeedRolesAsync(roleManagerSvc);
-            // await SeedCart();
+
             await SeedDemoUsersAsync(userManagerSvc);
+
+            //TODO: Seed Cart
+            // Assign Cart
+            //seed ingredients 
+            //seed Prodcuts
+            // seed orders
 
 
 
@@ -91,10 +97,10 @@ namespace pizzaperks.Data
             };
             try
             {
-                var user = await userManager.FindByEmailAsync(defaultUser.Email);
+                var user = await userManager.FindByEmailAsync(defaultCustomer.Email);
                 if (user == null)
                 {
-                    await userManager.CreateAsync(defaultCustomer, "Fw%@P!ZZ@8");
+                    var testUser = await userManager.CreateAsync(defaultCustomer, "Fw%@P!ZZ@8");
                     await userManager.AddToRoleAsync(defaultCustomer, Roles.Customer.ToString());
                 }
 
