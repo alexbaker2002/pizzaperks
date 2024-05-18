@@ -1,23 +1,28 @@
-﻿namespace pizzaperks.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace pizzaperks.Models
 {
-    public class Product
-    {
+	public class Product
+	{
 
 
-        public int Id { get; set; }
-        public string? Name { get; set; }
-        public string? Description { get; set; }
-        public double Cost { get; set; }
+		public int Id { get; set; }
+		public string? Name { get; set; }
+		public string? Description { get; set; }
+		public double Cost { get; set; }
 
-        // Ingredients
+		[NotMapped]
+		public int? OrderId { get; set; }
 
-        public virtual ICollection<Ingredient> Ingredients { get; set; } = new HashSet<Ingredient>();
+		// Ingredients
 
-
-
-
-
+		public virtual ICollection<Ingredient> Ingredients { get; set; } = new HashSet<Ingredient>();
 
 
-    }
+
+
+
+
+
+	}
 }

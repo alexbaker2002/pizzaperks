@@ -2,20 +2,20 @@
 
 namespace pizzaperks.Models
 {
-    public class Order
-    {
-        public int Id { get; set; }
-        public string? OrderNumber { get; set; }
+	public class Order
+	{
+		public int Id { get; set; }
+		public string? OrderNumber { get; set; }
 
-        public double OrderTotal { get; set; }
+		public double OrderTotal { get; set; }
 
-        public string? OrderUserId { get; set; }
+		public string? OrderUserId { get; set; }
 
-        public OrderStatus? OrderStatus { get; set; }
+		public OrderStatus? OrderStatus { get; set; }
 
-        [DisplayName("Order Date/Time")]
-        public DateTime OrderDateTime { get; set; }
+		[DisplayName("Order Date/Time")]
+		public DateTime OrderDateTime { get; set; }
+		public virtual ICollection<Product> OrderedItems { get; set; } = new HashSet<Product>();
 
-
-    }
+	}
 }
