@@ -8211,9 +8211,11 @@ textarea.form-control {
   background: #000; }
 
 .ftco-footer {
-  font-size: 16px;
-  padding: 1em 0;
-  background: #101315; }
+    font-size: 16px;
+    padding: 1em 0;
+    background: #101315;
+    top: 50vh;
+}
   .ftco-footer .ftco-footer-logo {
     text-transform: uppercase;
     letter-spacing: .1em; }
@@ -8426,7 +8428,9 @@ textarea.form-control {
 .user-img {
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center center; }
+  background-position: center center; 
+ 
+}
 
 @media (max-width: 767.98px) {
   .img-about {

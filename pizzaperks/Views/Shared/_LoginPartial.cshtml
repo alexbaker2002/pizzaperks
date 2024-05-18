@@ -12,25 +12,28 @@
 
 
     <li class="nav-item">
-        <a  class="nav-link text-light" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">@(UserInfo!.FullName ?? User.Identity!.Name)</a>
+            <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage"><span class="icon-user"></span> @(UserInfo!.FullName ?? User.Identity!.Name)</a>
     </li>
-        @if (User.IsInRole(nameof(Roles.Customer)))
+        @if (User.IsInRole(nameof(Roles.Manager)))
         {
             <li class="nav-item">
-                <a class="nav-link text-light" asp-controller="Cart" asp-action="Index" title="Cart"><span class="icon-opencart"></span></a>
+                <a class="nav-link text-light" asp-controller="Home" asp-action="Dashboard" title="Dashboard"><span class="icon-dashboard"></span> Dashboard</a>
             </li>
         }
-
-
-
+        else
+        {
+            <li class="nav-item">
+                <a class="nav-link text-light" asp-controller="Cart" asp-action="Index" title="Cart"><span class="icon-opencart"> Cart</span></a>
+            </li>
+        }
 }
 else
 {
     <li class="nav-item">
-        <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Register">Register</a>
+            <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Register"><span class="icon-user-plus"></span> Register</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Login">Login</a>
+            <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Login"> <span class="icon-sign-in"></span> Login</a>
     </li>
 }
 </ul>

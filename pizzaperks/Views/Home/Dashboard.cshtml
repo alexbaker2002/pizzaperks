@@ -4,20 +4,22 @@
 @{
 
 }
+<div class="container dashboard h-100 mb-5">
 
+    @if (User.IsInRole(nameof(Roles.Manager)))
+    {
+        <div class="dashboard" id="manager-dashboard">
+            <h3>You are a manager</h3>
+        </div>
+    }
+    else
+    {
+        <div class="dashboard" id="user-dashboard">
+            <h3>You are a customer.</h3>
+        </div>
+    }
+</div>
 
-@if (User.IsInRole(nameof(Roles.Manager)))
-{
-    <div class="dashboard" id="manager-dashboard">
-        <h3>You are a manager</h3>
-    </div>
-}
-else
-{
-    <div class="dashboard" id="user-dashboard">
-        <h3>You are a customer.</h3>
-    </div>
-}
 
 
 
