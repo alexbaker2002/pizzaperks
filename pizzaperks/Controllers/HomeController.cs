@@ -1,17 +1,18 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using pizzaperks.Models;
+using pizzaperks.Models.Enums;
+using pizzaperks.Services.Interfaces;
 using System.Diagnostics;
 
 namespace pizzaperks.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(ILogger<HomeController> logger, IOrdersService ordersService) : Controller
     {
-        private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
+
+        private readonly ILogger<HomeController>? _logger = logger;
+        private readonly IOrdersService _ordersService = ordersService;
 
         public IActionResult Index()
         {
@@ -22,9 +23,22 @@ namespace pizzaperks.Controllers
         {
             return View();
         }
-        public IActionResult Dashboard()
+
+        [Authorize]
+        public async Task<IActionResult> Dashboard()
         {
-            return View();
+            if (User.IsInRole(nameof(Roles.Customer)))
+            {
+                RedirectToAction("Orders", "Details");
+            }
+
+            //TODO: Create IOrdersService
+            //Get all Orders that do not show complete and send to Dashboard View
+
+            List<Order> orders = await _ordersService.GetAllOrdersAsync();
+
+
+            return View(orders);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
