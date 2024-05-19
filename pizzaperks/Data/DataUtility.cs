@@ -480,7 +480,7 @@ namespace pizzaperks.Data
 				.OrderedItems.FirstOrDefault(c => c.Name == "Italian Pizza")!
 				.Cost += ingredients.FirstOrDefault(c => c.Name == "Anchovies")!.Cost;
 
-			orders.FirstOrDefault(cc => c.OrderNumber == "ORD005")!
+			orders.FirstOrDefault(c => c.OrderNumber == "ORD005")!
 			.OrderedItems.FirstOrDefault(c => c.Name == "Pepperoni Pizza")!
 			.Ingredients.Add(ingredients.FirstOrDefault(c => c.Name == "Pepperoni")!);
 
