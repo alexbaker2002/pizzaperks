@@ -18,11 +18,5 @@ namespace pizzaperks.Models
 
 		public virtual ICollection<Ingredient> Ingredients { get; set; } = new HashSet<Ingredient>();
 
-
-
-
-
-
-
 	}
 }

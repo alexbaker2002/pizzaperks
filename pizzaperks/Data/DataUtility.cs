@@ -18,6 +18,7 @@ namespace pizzaperks.Data
 			using var svcScope = app.Services.CreateScope();
 			var svcProvider = svcScope.ServiceProvider;
 
+
 			//Service: An instance of DatabaseManager
 			var dbContextSvc = svcProvider.GetRequiredService<ApplicationDbContext>();
 			//Service: An instance of RoleManager
@@ -35,17 +36,23 @@ namespace pizzaperks.Data
 			await SeedDemoUsersAsync(userManagerSvc);
 
 			//TODO: Seed Cart
+			await SeedUserCartsAsync(dbContextSvc);
 
-			// Assign Cart
 			//seed ingredients 
+			List<Ingredient> ingredients = await SeedIngredientsAsync(dbContextSvc);
+
 
 			//seed Prodcuts
+			await SeedProductsAsync(dbContextSvc, ingredients);
 			// seed orders
+			await SeedOrdersAsync(dbContextSvc);
 
 
 
 
 		}
+
+
 
 		private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
 		{
@@ -142,7 +149,7 @@ namespace pizzaperks.Data
 
 		}
 
-		private static async Task SeedIngredientsAsync(ApplicationDbContext context)
+		private static async Task<List<Ingredient>> SeedIngredientsAsync(ApplicationDbContext context)
 		{
 			List<Ingredient> ingredients = new List<Ingredient>() {
 
@@ -234,9 +241,149 @@ namespace pizzaperks.Data
 				throw;
 			}
 
-
+			return ingredients;
 		}
 
+		private static async Task SeedProductsAsync(ApplicationDbContext context, List<Ingredient> ingredients)
+		{
+			List<Product> products = new List<Product>() {
+				new Product
+			{
+
+				Name = "Pepperoni Pizza",
+				Description = "Classic pepperoni pizza with tomato sauce and mozzarella cheese",
+				Cost = 8.99,
+				Ingredients = new List<Ingredient>
+				{
+					ingredients.Find(i => i.Name == "Tomato Sauce") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Mozzarella") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Pepperoni") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!")
+				}
+			},
+			new Product
+			{
+
+				Name = "Veggie Pizza",
+				Description = "Healthy veggie pizza with tomato sauce, mozzarella cheese, bell peppers, onions, and olives",
+				Cost = 9.99,
+				Ingredients = new List<Ingredient>
+				{
+					ingredients.Find(i => i.Name == "Tomato Sauce") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Mozzarella") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Bell Peppers") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Onions") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Olives") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!")
+				}
+			},
+			new Product
+			{
+
+				Name = "Pesto Chicken Pizza",
+				Description = "Delicious pesto pizza with mozzarella cheese and grilled chicken",
+				Cost = 10.99,
+				Ingredients = new List<Ingredient>
+				{
+					ingredients.Find(i => i.Name == "Pesto") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Mozzarella") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Grilled Chicken")?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!")
+				}
+			},
+			new Product
+			{
+
+				Name = "Italian Pizza",
+				Description = "Traditional Italian pizza with tomato sauce, mozzarella, basil, and olive oil",
+				Cost = 11.99,
+				Ingredients = new List<Ingredient>
+				{
+					ingredients.Find(i => i.Name == "Tomato Sauce") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Mozzarella") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Basil") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Olive Oil") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!")
+				}
+			},
+			new Product
+			{
+
+				Name = "Greek Pizza",
+				Description = "Mediterranean style pizza with feta cheese, olives, spinach, and artichoke hearts",
+				Cost = 12.99,
+				Ingredients = new List<Ingredient>
+				{
+					ingredients.Find(i => i.Name == "Feta") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Olives") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Spinach") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Artichoke Hearts") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!")
+				}
+			},
+			new Product
+			{
+
+				Name = "Caucasian Pizza",
+				Description = "Unique pizza with mozzarella, cheddar, and bacon",
+				Cost = 13.99,
+				Ingredients = new List<Ingredient>
+				{
+					ingredients.Find(i => i.Name == "Mozzarella") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Cheddar") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Bacon") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!")
+				}
+			},
+			new Product
+			{
+
+				Name = "American Pizza",
+				Description = "Classic American pizza with tomato sauce, mozzarella, pepperoni, and ground beef",
+				Cost = 10.99,
+				Ingredients = new List<Ingredient>
+				{
+					ingredients.Find(i => i.Name == "Tomato Sauce") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Mozzarella") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Pepperoni") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Ground Beef") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!")
+				}
+			},
+			new Product
+			{
+
+				Name = "Tomato Pie",
+				Description = "Traditional tomato pie with tomato sauce, mozzarella, and ricotta",
+				Cost = 9.99,
+				Ingredients = new List<Ingredient>
+				{
+					ingredients.Find(i => i.Name == "Tomato Sauce") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Mozzarella") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!"),
+					ingredients.Find(i => i.Name == "Ricotta") ?? throw new Exception("UNFOUND INGREDIENT WHEN SEEDING !!!")
+				}
+			}
+
+			};
+
+
+			try
+			{
+				//Have we seeded these already?
+				var dbProducts = context.Products.Select(c => c.Name).ToList();
+				// Select ones that are not already in the database
+				await context.Products.AddRangeAsync(products.Where(c => !dbProducts.Contains(c.Name)));
+				await context.SaveChangesAsync();
+			}
+			catch (Exception ex)
+			{
+
+				Console.WriteLine("*************  ERROR  *************");
+				Console.WriteLine("Error Seeding Pizzas.");
+				Console.WriteLine(ex.Message);
+				Console.WriteLine("***********************************");
+				throw;
+			}
+
+
+		}
+		private static async Task SeedOrdersAsync(ApplicationDbContext dbContextSvc)
+		{
+			throw new NotImplementedException();
+		}
 
 	}
 }
