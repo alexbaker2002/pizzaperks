@@ -3221,14 +3221,15 @@ input[type="button"].btn-block {
 
 .nav-pills .nav-link.active,
 .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #78d5ef; }
+  color: black !important;
+  background-color: #ffc107 !important; }
 
 .nav-fill .nav-item {
-  -webkit-box-flex: 1;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
-  text-align: center; }
+    -webkit-box-flex: 1;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    text-align: center;
+}
 
 .nav-justified .nav-item {
   -ms-flex-preferred-size: 0;

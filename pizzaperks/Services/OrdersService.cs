@@ -13,7 +13,7 @@ namespace pizzaperks.Services
         {
 
             double total = order.OrderedItems.Sum(item => item.Cost);
-            return total + (total * 0.775);
+            return total + (total * 0.0775);
         }
 
         public Task<Order> CancelOrderAsync(Order order)
