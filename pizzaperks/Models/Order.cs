@@ -11,7 +11,7 @@ namespace pizzaperks.Models
 
 		public string? OrderUserId { get; set; }
 
-		public OrderStatus? OrderStatus { get; set; }
+		public string? OrderStatus { get; set; }
 
 		[DisplayName("Order Date/Time")]
 		public DateTime OrderDateTime { get; set; }

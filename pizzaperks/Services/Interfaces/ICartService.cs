@@ -3,9 +3,11 @@
 
 namespace pizzaperks.Services.Interfaces
 {
-    public interface ICartService
-    {
-        Task<Cart> CreateNewCartAsync(Cart cart);
-        Task<Cart> GetCartWithItemsAsync(int? CartId);
-    }
+	public interface ICartService
+	{
+		Task<Cart> CreateNewCartAsync(Cart cart);
+		Task<Cart> GetCartWithItemsAsync(int? CartId);
+		double CalculateOrderTotal(Order order);
+
+	}
 }

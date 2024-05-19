@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using pizzaperks.Models;
 using pizzaperks.Models.Enums;
+using pizzaperks.Services.Interfaces;
 
 namespace pizzaperks.Data
 {
@@ -27,6 +28,8 @@ namespace pizzaperks.Data
 			var userManagerSvc = svcProvider.GetRequiredService<UserManager<PZUser>>();
 			//Migration: This is the programmatic equivalent to Update-Database
 
+			ICartService _cartService = svcProvider.GetRequiredService<ICartService>();
+
 
 
 			await dbContextSvc.Database.MigrateAsync();
@@ -43,13 +46,9 @@ namespace pizzaperks.Data
 
 
 			//seed Prodcuts
-			await SeedProductsAsync(dbContextSvc, ingredients);
+			List<Product> products = await SeedProductsAsync(dbContextSvc, ingredients);
 			// seed orders
-			await SeedOrdersAsync(dbContextSvc);
-
-
-
-
+			await SeedOrdersAsync(dbContextSvc, products, ingredients, _cartService);
 		}
 
 
@@ -194,8 +193,8 @@ namespace pizzaperks.Data
 			new Ingredient { Name = "Arugula", Description = "Fresh arugula", Cost = 1.75 },
 			new Ingredient { Name = "Sun-dried Tomatoes", Description = "Sun-dried tomatoes", Cost = 2.50 },
 			new Ingredient { Name = "Pineapple", Description = "Pineapple chunks", Cost = 1.50 },
-			new Ingredient { Name = "Apple Slices", Description = "Fresh apple slices", Cost = 1.75 },
-			new Ingredient { Name = "Pear Slices", Description = "Fresh pear slices", Cost = 1.75 },
+			//new Ingredient { Name = "Apple Slices", Description = "Fresh apple slices", Cost = 1.75 },
+			//new Ingredient { Name = "Pear Slices", Description = "Fresh pear slices", Cost = 1.75 },
 			new Ingredient { Name = "Figs", Description = "Sliced figs", Cost = 2.75 },
 			new Ingredient { Name = "Basil", Description = "Fresh basil leaves", Cost = 1.25 },
 			new Ingredient { Name = "Oregano", Description = "Dried oregano", Cost = 0.75 },
@@ -204,21 +203,21 @@ namespace pizzaperks.Data
 			new Ingredient { Name = "Red Pepper Flakes", Description = "Crushed red pepper flakes", Cost = 0.50 },
 			new Ingredient { Name = "Garlic", Description = "Fresh garlic", Cost = 0.75 },
 			new Ingredient { Name = "Parsley", Description = "Fresh parsley", Cost = 1.00 },
-			new Ingredient { Name = "Shrimp", Description = "Cooked shrimp", Cost = 4.00 },
-			new Ingredient { Name = "Clams", Description = "Cooked clams", Cost = 3.75 },
-			new Ingredient { Name = "Smoked Salmon", Description = "Sliced smoked salmon", Cost = 5.00 },
-			new Ingredient { Name = "Tuna", Description = "Canned tuna", Cost = 2.25 },
-			new Ingredient { Name = "Pine Nuts", Description = "Toasted pine nuts", Cost = 3.50 },
-			new Ingredient { Name = "Walnuts", Description = "Chopped walnuts", Cost = 2.75 },
-			new Ingredient { Name = "Sesame Seeds", Description = "Toasted sesame seeds", Cost = 1.25 },
-			new Ingredient { Name = "Sunflower Seeds", Description = "Toasted sunflower seeds", Cost = 1.50 },
+			//new Ingredient { Name = "Shrimp", Description = "Cooked shrimp", Cost = 4.00 },
+			//new Ingredient { Name = "Clams", Description = "Cooked clams", Cost = 3.75 },
+			//new Ingredient { Name = "Smoked Salmon", Description = "Sliced smoked salmon", Cost = 5.00 },
+			//new Ingredient { Name = "Tuna", Description = "Canned tuna", Cost = 2.25 },
+			//new Ingredient { Name = "Pine Nuts", Description = "Toasted pine nuts", Cost = 3.50 },
+			//new Ingredient { Name = "Walnuts", Description = "Chopped walnuts", Cost = 2.75 },
+			//new Ingredient { Name = "Sesame Seeds", Description = "Toasted sesame seeds", Cost = 1.25 },
+			//new Ingredient { Name = "Sunflower Seeds", Description = "Toasted sunflower seeds", Cost = 1.50 },
 			new Ingredient { Name = "Capers", Description = "Pickled capers", Cost = 2.00 },
 			new Ingredient { Name = "Balsamic Glaze", Description = "Sweet balsamic glaze", Cost = 2.25 },
-			new Ingredient { Name = "Truffle Oil", Description = "Truffle-infused oil", Cost = 4.00 },
-			new Ingredient { Name = "Pickles", Description = "Sliced pickles", Cost = 1.50 },
-			new Ingredient { Name = "Avocado", Description = "Sliced avocado", Cost = 2.75 },
-			new Ingredient { Name = "Corn", Description = "Sweet corn kernels", Cost = 1.25 },
-			new Ingredient { Name = "Capicola", Description = "Sliced capicola", Cost = 3.25 }
+			//new Ingredient { Name = "Truffle Oil", Description = "Truffle-infused oil", Cost = 4.00 },
+			//new Ingredient { Name = "Pickles", Description = "Sliced pickles", Cost = 1.50 },
+			//new Ingredient { Name = "Avocado", Description = "Sliced avocado", Cost = 2.75 },
+			//new Ingredient { Name = "Corn", Description = "Sweet corn kernels", Cost = 1.25 },
+			//new Ingredient { Name = "Capicola", Description = "Sliced capicola", Cost = 3.25 }
 
 			};
 
@@ -244,7 +243,7 @@ namespace pizzaperks.Data
 			return ingredients;
 		}
 
-		private static async Task SeedProductsAsync(ApplicationDbContext context, List<Ingredient> ingredients)
+		private static async Task<List<Product>> SeedProductsAsync(ApplicationDbContext context, List<Ingredient> ingredients)
 		{
 			List<Product> products = new List<Product>() {
 				new Product
@@ -360,6 +359,7 @@ namespace pizzaperks.Data
 			};
 
 
+
 			try
 			{
 				//Have we seeded these already?
@@ -367,6 +367,7 @@ namespace pizzaperks.Data
 				// Select ones that are not already in the database
 				await context.Products.AddRangeAsync(products.Where(c => !dbProducts.Contains(c.Name)));
 				await context.SaveChangesAsync();
+				return products;
 			}
 			catch (Exception ex)
 			{
@@ -380,10 +381,141 @@ namespace pizzaperks.Data
 
 
 		}
-		private static async Task SeedOrdersAsync(ApplicationDbContext dbContextSvc)
+		private static async Task SeedOrdersAsync(ApplicationDbContext context, List<Product> products, List<Ingredient> ingredients, ICartService _cartService)
 		{
-			throw new NotImplementedException();
-		}
 
+			List<Order> orders = new List<Order>()
+			{
+				new Order
+				{
+
+					OrderNumber = "ORD001",
+					OrderUserId = "2",
+					OrderStatus = nameof(Models.Enums.OrderStatus.Preparing),
+					OrderDateTime = DateTime.Now.AddMinutes(-1),
+					OrderedItems = new List<Product>
+					{
+						products.Find(p => p.Name == "Pepperoni Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
+						products.Find(p => p.Name == "Veggie Pizza")?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
+						products.Find(p => p.Name == "Tomato Pie") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
+					}
+				},
+				new Order
+				{
+
+					OrderNumber = "ORD002",
+					OrderUserId = "3",
+					OrderStatus = nameof(Models.Enums.OrderStatus.Cooking),
+					OrderDateTime = DateTime.Now.AddMinutes(-3),
+					OrderedItems = new List<Product>
+					{
+						products.Find(p => p.Name == "Pesto Chicken Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
+						// add anchovies to below later in method
+						products.Find(p => p.Name == "Italian Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
+					}
+
+
+				},
+				new Order
+				{
+
+					OrderNumber = "ORD003",
+					OrderUserId = "4",
+					OrderStatus = nameof(Models.Enums.OrderStatus.Ready),
+					OrderDateTime = DateTime.Now.AddMinutes(-20),
+					OrderedItems = new List<Product>
+					{
+						products.Find(p => p.Name == "Greek Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
+						products.Find(p => p.Name == "Caucasian Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
+					}
+				},
+				new Order
+				{
+
+					OrderNumber = "ORD004",
+					OrderUserId = "2",
+					OrderStatus = nameof(Models.Enums.OrderStatus.Complete),
+					OrderDateTime = DateTime.Now.AddDays(-7),
+					OrderedItems = new List<Product>
+					{
+						products.Find(p => p.Name == "American Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
+						products.Find(p => p.Name == "Italian Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
+						products.Find(p => p.Name == "Tomato Pie") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
+					}
+				},
+				new Order
+				{
+
+					OrderNumber = "ORD005",
+					OrderUserId = "2",
+					OrderStatus = nameof(Models.Enums.OrderStatus.Complete),
+					OrderDateTime = DateTime.Now.AddDays(-15),
+					OrderedItems = new List<Product>
+					{
+						products.Find(p => p.Name == "Pepperoni Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
+						products.Find(p => p.Name == "Greek Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
+					}
+				},
+				new Order
+				{
+					OrderNumber = "ORD006",
+					OrderUserId = "3",
+					OrderStatus = nameof(Models.Enums.OrderStatus.Complete),
+					OrderDateTime = DateTime.Now.AddDays(-12),
+					OrderedItems = new List<Product>
+					{
+						products.Find(p => p.Name == "Caucasian Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
+						products.Find(p => p.Name == "Tomato Pie") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
+					}
+				}
+			};
+
+			// Add Ingredient to Order
+			orders.FirstOrDefault(c => c.OrderNumber == "ORD002")!
+			.OrderedItems.FirstOrDefault(c => c.Name == "Italian Pizza")!
+			.Ingredients.Add(ingredients.FirstOrDefault(c => c.Name == "Anchovies")!);
+
+			//Add cost for Ingredient to order
+			orders.FirstOrDefault(c => c.OrderNumber == "ORD002")!
+				.OrderedItems.FirstOrDefault(c => c.Name == "Italian Pizza")!
+				.Cost += ingredients.FirstOrDefault(c => c.Name == "Anchovies")!.Cost;
+
+			orders.FirstOrDefault(cc => c.OrderNumber == "ORD005")!
+			.OrderedItems.FirstOrDefault(c => c.Name == "Pepperoni Pizza")!
+			.Ingredients.Add(ingredients.FirstOrDefault(c => c.Name == "Pepperoni")!);
+
+			orders.FirstOrDefault(c => c.OrderNumber == "ORD005")!
+				.OrderedItems.FirstOrDefault(c => c.Name == "Pepperoni Pizza")!
+				.Cost += ingredients.FirstOrDefault(c => c.Name == "Pepperoni")!.Cost;
+
+
+			foreach (Order order in orders)
+			{
+				order.OrderTotal = _cartService.CalculateOrderTotal(order);
+			}
+
+
+			try
+			{
+				//Have we seeded these already?
+				var dbOrders = context.Orders.Select(c => c.OrderNumber).ToList();
+				// Select ones that are not already in the database
+				await context.Orders.AddRangeAsync(orders.Where(c => !dbOrders.Contains(c.OrderNumber)));
+				await context.SaveChangesAsync();
+
+			}
+			catch (Exception ex)
+			{
+
+				Console.WriteLine("*************  ERROR  *************");
+				Console.WriteLine("Error Seeding Orders.");
+				Console.WriteLine(ex.Message);
+				Console.WriteLine("***********************************");
+				throw;
+			}
+
+
+
+		}
 	}
 }
