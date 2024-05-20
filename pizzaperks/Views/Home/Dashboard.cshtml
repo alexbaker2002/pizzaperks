@@ -1,25 +1,63 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using pizzaperks.Models.Enums;
-@model pizzaperks.Models.Order
+@model IEnumerable<Order>;
 
 @{
 
 }
-<div class="container dashboard h-100 mb-5">
+<div class="container dashboard mb-5">
 
-    @if (User.IsInRole(nameof(Roles.Manager)))
-    {
-        <div class="dashboard" id="manager-dashboard">
-            <h3>You are a manager</h3>
+  
+        <div class="dashboard mb-3 mt-5" id="manager-dashboard">
+            <h3>Store Dashboard 243</h3>
+
+            <table class="table table-light table-striped table-hover mt-5">
+                <thead>
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">
+                            Order Number
+                        </th>
+                    <th scope="col">
+                        Time
+                    </th>
+                    <th scope="col" >
+                        Status
+                    </th>
+                    
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var (index, order) in Model.Select((order, index) => (index, order)))
+                {
+
+                   <tr scope="row" onclick="EditOrder(@order.Id)">
+                        <td>@(index + 1)</td>
+                        <td>@order.OrderNumber</td>
+                        <td>@order.OrderDateTime</td>
+                        <td>@order.OrderStatus</td>
+                   </tr>
+                    
+                }
+                </tbody>
+            </table>
+
         </div>
-    }
-    else
-    {
-       
-    }
+
 </div>
 
 
 
 
+@section Scripts{
+    <script>
+        function EditOrder(index) {
+            console.log(`Hello ${index}`);
+            var url = `@(Url.Action("Edit","Orders"))/${index}`;
+            window.location.href = url;
+        }
 
+    </script>
+  
+    
+}

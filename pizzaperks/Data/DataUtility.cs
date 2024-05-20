@@ -36,7 +36,7 @@ namespace pizzaperks.Data
 
             await SeedRolesAsync(roleManagerSvc);
 
-            await SeedDemoUsersAsync(userManagerSvc);
+            List<PZUser> seededUserAccounts = await SeedDemoUsersAsync(userManagerSvc);
 
             //TODO: Seed Cart
             await SeedUserCartsAsync(dbContextSvc);
@@ -48,7 +48,7 @@ namespace pizzaperks.Data
             //seed Prodcuts
             List<Product> products = await SeedProductsAsync(dbContextSvc, ingredients);
             // seed orders
-            await SeedOrdersAsync(dbContextSvc, products, ingredients, _ordersService);
+            await SeedOrdersAsync(dbContextSvc, products, ingredients, _ordersService, seededUserAccounts);
         }
 
 
@@ -60,8 +60,11 @@ namespace pizzaperks.Data
             await roleManager.CreateAsync(new IdentityRole(Roles.Customer.ToString()));
         }
 
-        private static async Task SeedDemoUsersAsync(UserManager<PZUser> userManager)
+        private static async Task<List<PZUser>> SeedDemoUsersAsync(UserManager<PZUser> userManager)
         {
+            List<PZUser> Users = new List<PZUser>();
+
+
             //Seed Demo Manager User
             var defaultUser = new PZUser
             {
@@ -70,7 +73,7 @@ namespace pizzaperks.Data
                 FirstName = "Dustin",
                 LastName = "Manager",
                 EmailConfirmed = true,
-                CartId = -1
+                CartId = -1 // Manager Account
 
             };
             try
@@ -82,7 +85,7 @@ namespace pizzaperks.Data
                     var testUser = await userManager.CreateAsync(defaultUser, "Fw%@P!ZZ@8");
                     await userManager.AddToRoleAsync(defaultUser, Roles.Manager.ToString());
                 }
-
+                Users.Add(defaultUser);
             }
             catch (Exception ex)
             {
@@ -92,7 +95,10 @@ namespace pizzaperks.Data
                 Console.WriteLine("***********************************");
                 throw;
             }
-            //Seed Demo Manager User
+
+
+
+            //Seed Demo Customer User
             var defaultCustomer = new PZUser
             {
                 UserName = "christy@notmymail.com",
@@ -111,7 +117,7 @@ namespace pizzaperks.Data
                     var testUser = await userManager.CreateAsync(defaultCustomer, "Fw%@P!ZZ@8");
                     await userManager.AddToRoleAsync(defaultCustomer, Roles.Customer.ToString());
                 }
-
+                Users.Add(defaultCustomer);
             }
             catch (Exception ex)
             {
@@ -122,6 +128,68 @@ namespace pizzaperks.Data
                 throw;
             }
 
+            //Seed Demo Customer User 1
+            var defaultCustomer1 = new PZUser
+            {
+                UserName = "cari@notmymail.com",
+                Email = "cari@notmymail.com",
+                FirstName = "Cari",
+                LastName = "Customer",
+                EmailConfirmed = true,
+                CartId = 2
+
+            };
+            try
+            {
+                var user = await userManager.FindByEmailAsync(defaultCustomer1.Email);
+                if (user == null)
+                {
+                    var testUser = await userManager.CreateAsync(defaultCustomer1, "Fw%@P!ZZ@8");
+                    await userManager.AddToRoleAsync(defaultCustomer1, Roles.Customer.ToString());
+                }
+                Users.Add(defaultCustomer1);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("*************  ERROR  *************");
+                Console.WriteLine("Error Seeding Demo Customer User 1.");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine("***********************************");
+                throw;
+            }
+
+            //Seed Demo Customer User 2
+            var defaultCustomer2 = new PZUser
+            {
+                UserName = "chris@notmymail.com",
+                Email = "chris@notmymail.com",
+                FirstName = "Chris",
+                LastName = "Customer",
+                EmailConfirmed = true,
+                CartId = 3
+
+            };
+            try
+            {
+                var user = await userManager.FindByEmailAsync(defaultCustomer2.Email);
+                if (user == null)
+                {
+                    var testUser = await userManager.CreateAsync(defaultCustomer2, "Fw%@P!ZZ@8");
+                    await userManager.AddToRoleAsync(defaultCustomer2, Roles.Customer.ToString());
+                }
+                Users.Add(defaultCustomer2);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("*************  ERROR  *************");
+                Console.WriteLine("Error Seeding Demo Customer User 1.");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine("***********************************");
+                throw;
+            }
+
+
+            return Users;
         }
 
         private static async Task SeedUserCartsAsync(ApplicationDbContext context)
@@ -381,8 +449,9 @@ namespace pizzaperks.Data
 
 
         }
-        private static async Task SeedOrdersAsync(ApplicationDbContext context, List<Product> products, List<Ingredient> ingredients, IOrdersService _ordersService)
+        private static async Task SeedOrdersAsync(ApplicationDbContext context, List<Product> products, List<Ingredient> ingredients, IOrdersService _ordersService, List<PZUser> _seededUsers)
         {
+            //TODO: REDO MODELS FOR ORDERS---
 
             List<Order> orders = new List<Order>()
             {
@@ -390,28 +459,31 @@ namespace pizzaperks.Data
                 {
 
                     OrderNumber = "ORD001",
-                    OrderUserId = "2",
+                    CustomerName = "Christy Customer",
+                    CustomerAccount = _seededUsers.Find(user => user.UserName == "christy@notmymail.com"),
+
                     OrderStatus = nameof(Models.Enums.OrderStatus.Preparing),
                     OrderDateTime = DateTime.UtcNow.AddMinutes(-1),
-                    OrderedItems = new List<Product>
+                    OrderedItems = new List<Order>
                     {
-                        products.Find(p => p.Name == "Pepperoni Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
-                        products.Find(p => p.Name == "Veggie Pizza")?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
-                        products.Find(p => p.Name == "Tomato Pie") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
+                        products.Find(p => p.Name == "Pepperoni Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
+                        products.Find(p => p.Name == "Veggie Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
+                        products.Find(p => p.Name == "Tomato Pie")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
                     }
                 },
                 new Order
                 {
 
                     OrderNumber = "ORD002",
-                    OrderUserId = "3",
+                    CustomerName = "Cari Customer",
+                    CustomerAccount = _seededUsers.Find(user => user.UserName == "cari@notmymail.com"),
                     OrderStatus = nameof(Models.Enums.OrderStatus.Cooking),
                     OrderDateTime = DateTime.UtcNow.AddMinutes(-3),
-                    OrderedItems = new List<Product>
+                    OrderedItems = new List<Order>
                     {
-                        products.Find(p => p.Name == "Pesto Chicken Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
+                        products.Find(p => p.Name == "Pesto Chicken Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
 						// add anchovies to below later in method
-						products.Find(p => p.Name == "Italian Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
+						products.Find(p => p.Name == "Italian Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
                     }
 
 
@@ -420,55 +492,63 @@ namespace pizzaperks.Data
                 {
 
                     OrderNumber = "ORD003",
-                    OrderUserId = "4",
+                    CustomerName = "Chris Customer",
+                    CustomerAccount = _seededUsers.Find(user => user.UserName == "chris@notmymail.com"),
                     OrderStatus = nameof(Models.Enums.OrderStatus.Ready),
                     OrderDateTime = DateTime.UtcNow.AddMinutes(-20),
-                    OrderedItems = new List<Product>
+                    OrderedItems = new List<Order>
                     {
-                        products.Find(p => p.Name == "Greek Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
-                        products.Find(p => p.Name == "Caucasian Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
+                        products.Find(p => p.Name == "Greek Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
+                        products.Find(p => p.Name == "Caucasian Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
                     }
                 },
                 new Order
                 {
 
                     OrderNumber = "ORD004",
-                    OrderUserId = "2",
+                    CustomerName = "Christy Customer",
+                    CustomerAccount = _seededUsers.Find(user => user.UserName == "christy@notmymail.com"),
                     OrderStatus = nameof(Models.Enums.OrderStatus.Complete),
                     OrderDateTime = DateTime.UtcNow.AddDays(-7),
-                    OrderedItems = new List<Product>
+                    OrderedItems = new List<Order>
                     {
-                        products.Find(p => p.Name == "American Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
-                        products.Find(p => p.Name == "Italian Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
-                        products.Find(p => p.Name == "Tomato Pie") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
+                        products.Find(p => p.Name == "American Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
+                        products.Find(p => p.Name == "Italian Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
+                        products.Find(p => p.Name == "Tomato Pie")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
                     }
                 },
                 new Order
                 {
 
                     OrderNumber = "ORD005",
-                    OrderUserId = "2",
+                    CustomerName = "Christy Customer",
+                    CustomerAccount = _seededUsers.Find(user => user.UserName == "christy@notmymail.com"),
                     OrderStatus = nameof(Models.Enums.OrderStatus.Complete),
                     OrderDateTime = DateTime.UtcNow.AddDays(-15),
-                    OrderedItems = new List<Product>
+                    OrderedItems = new List<Order>
                     {
-                        products.Find(p => p.Name == "Pepperoni Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
-                        products.Find(p => p.Name == "Greek Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
+                        products.Find(p => p.Name == "Pepperoni Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
+                        products.Find(p => p.Name == "Greek Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
                     }
                 },
                 new Order
                 {
                     OrderNumber = "ORD006",
-                    OrderUserId = "3",
+                    CustomerName = "Cari Customer",
+                    CustomerAccount = _seededUsers.Find(user => user.UserName == "cari@notmymail.com"),
                     OrderStatus = nameof(Models.Enums.OrderStatus.Complete),
                     OrderDateTime = DateTime.UtcNow.AddDays(-12),
-                    OrderedItems = new List<Product>
+                    OrderedItems = new List<Order>
                     {
-                        products.Find(p => p.Name == "Caucasian Pizza") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
-                        products.Find(p => p.Name == "Tomato Pie") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
+                        products.Find(p => p.Name == "Caucasian Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
+                        products.Find(p => p.Name == "Tomato Pie")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
                     }
                 }
             };
+
+            //Add rest of Orders Info
+
+            //Strip Order Id's
 
             // Add Ingredient to Order
             orders.FirstOrDefault(c => c.OrderNumber == "ORD002")!

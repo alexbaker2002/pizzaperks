@@ -69,6 +69,7 @@ namespace pizzaperks.Controllers
             }
 
             var order = await _context.Orders.FindAsync(id);
+
             if (order == null)
             {
                 return NotFound();

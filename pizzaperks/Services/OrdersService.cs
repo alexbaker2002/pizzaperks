@@ -33,9 +33,22 @@ namespace pizzaperks.Services
 
         public async Task<List<Order>> GetAllOrdersAsync()
         {
-            List<Order> orders = await _context.Orders.ToListAsync();
-            orders = orders.OrderByDescending(order => order.OrderDateTime).ToList();
-            return orders;
+            try
+            {
+                List<Order> orders = await _context.Orders.ToListAsync();
+                orders = orders.OrderByDescending(order => order.OrderDateTime).ToList();
+                return orders;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("*************  ERROR  *************");
+                Console.WriteLine("Error Getting Orders.");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine("***********************************");
+                return null!;
+            }
+
+
         }
 
         public Task<List<Order>> GetCustomerOrdersAsync(int userId)
