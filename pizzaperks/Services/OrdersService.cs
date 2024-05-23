@@ -35,7 +35,11 @@ namespace pizzaperks.Services
         {
             try
             {
-                List<Order> orders = await _context.Orders.ToListAsync();
+                List<Order> orders = await _context.Orders
+                    .Include(o => o.OrderedItems)
+                    .ThenInclude(o => o.Ingredients)
+                    .ToListAsync();
+
                 orders = orders.OrderByDescending(order => order.OrderDateTime).ToList();
                 return orders;
             }

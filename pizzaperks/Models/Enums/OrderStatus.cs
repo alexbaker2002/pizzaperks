@@ -1,6 +1,6 @@
 ﻿namespace pizzaperks.Models.Enums
 {
-    public enum OrderStatus
+    public enum OrderStatusEnum
     {
         Preparing,
         Cooking,

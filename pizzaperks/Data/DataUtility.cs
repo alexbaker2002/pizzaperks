@@ -458,13 +458,13 @@ namespace pizzaperks.Data
                 new Order
                 {
 
-                    OrderNumber = "ORD001",
+                    OrderNumber = "ORD006",
                     CustomerName = "Christy Customer",
                     CustomerAccount = _seededUsers.Find(user => user.UserName == "christy@notmymail.com"),
 
-                    OrderStatus = nameof(Models.Enums.OrderStatus.Preparing),
+                    Status = nameof(Models.Enums.OrderStatusEnum.Preparing),
                     OrderDateTime = DateTime.UtcNow.AddMinutes(-1),
-                    OrderedItems = new List<Order>
+                    OrderedItems = new List<Product>
                     {
                         products.Find(p => p.Name == "Pepperoni Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
                         products.Find(p => p.Name == "Veggie Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
@@ -474,12 +474,12 @@ namespace pizzaperks.Data
                 new Order
                 {
 
-                    OrderNumber = "ORD002",
+                    OrderNumber = "ORD005",
                     CustomerName = "Cari Customer",
                     CustomerAccount = _seededUsers.Find(user => user.UserName == "cari@notmymail.com"),
-                    OrderStatus = nameof(Models.Enums.OrderStatus.Cooking),
+                    Status = nameof(Models.Enums.OrderStatusEnum.Cooking),
                     OrderDateTime = DateTime.UtcNow.AddMinutes(-3),
-                    OrderedItems = new List<Order>
+                    OrderedItems = new List<Product>
                     {
                         products.Find(p => p.Name == "Pesto Chicken Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
 						// add anchovies to below later in method
@@ -491,26 +491,28 @@ namespace pizzaperks.Data
                 new Order
                 {
 
-                    OrderNumber = "ORD003",
+                    OrderNumber = "ORD004",
                     CustomerName = "Chris Customer",
                     CustomerAccount = _seededUsers.Find(user => user.UserName == "chris@notmymail.com"),
-                    OrderStatus = nameof(Models.Enums.OrderStatus.Ready),
+                    Status = nameof(Models.Enums.OrderStatusEnum.Ready),
                     OrderDateTime = DateTime.UtcNow.AddMinutes(-20),
-                    OrderedItems = new List<Order>
+                     OrderedItems = new List<Product>
                     {
-                        products.Find(p => p.Name == "Greek Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
-                        products.Find(p => p.Name == "Caucasian Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
+                        products.Find(p => p.Name == "American Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
+                        products.Find(p => p.Name == "American Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
+                        products.Find(p => p.Name == "Italian Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
+                        products.Find(p => p.Name == "Tomato Pie") ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
                     }
                 },
                 new Order
                 {
 
-                    OrderNumber = "ORD004",
+                    OrderNumber = "ORD003",
                     CustomerName = "Christy Customer",
                     CustomerAccount = _seededUsers.Find(user => user.UserName == "christy@notmymail.com"),
-                    OrderStatus = nameof(Models.Enums.OrderStatus.Complete),
+                    Status = nameof(Models.Enums.OrderStatusEnum.Complete),
                     OrderDateTime = DateTime.UtcNow.AddDays(-7),
-                    OrderedItems = new List<Order>
+                    OrderedItems = new List<Product>
                     {
                         products.Find(p => p.Name == "American Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
                         products.Find(p => p.Name == "Italian Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
@@ -520,12 +522,12 @@ namespace pizzaperks.Data
                 new Order
                 {
 
-                    OrderNumber = "ORD005",
+                    OrderNumber = "ORD002",
                     CustomerName = "Christy Customer",
                     CustomerAccount = _seededUsers.Find(user => user.UserName == "christy@notmymail.com"),
-                    OrderStatus = nameof(Models.Enums.OrderStatus.Complete),
-                    OrderDateTime = DateTime.UtcNow.AddDays(-15),
-                    OrderedItems = new List<Order>
+                    Status = nameof(Models.Enums.OrderStatusEnum.Complete),
+                    OrderDateTime = DateTime.UtcNow.AddDays(-10),
+                    OrderedItems = new List<Product>
                     {
                         products.Find(p => p.Name == "Pepperoni Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
                         products.Find(p => p.Name == "Greek Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
@@ -533,12 +535,12 @@ namespace pizzaperks.Data
                 },
                 new Order
                 {
-                    OrderNumber = "ORD006",
+                    OrderNumber = "ORD001",
                     CustomerName = "Cari Customer",
                     CustomerAccount = _seededUsers.Find(user => user.UserName == "cari@notmymail.com"),
-                    OrderStatus = nameof(Models.Enums.OrderStatus.Complete),
-                    OrderDateTime = DateTime.UtcNow.AddDays(-12),
-                    OrderedItems = new List<Order>
+                    Status = nameof(Models.Enums.OrderStatusEnum.Complete),
+                    OrderDateTime = DateTime.UtcNow.AddDays(-15),
+                    OrderedItems = new List<Product>
                     {
                         products.Find(p => p.Name == "Caucasian Pizza")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!"),
                         products.Find(p => p.Name == "Tomato Pie")  ?? throw new Exception("UNFOUND PIZZA WHEN SEEDING !!!")
@@ -551,20 +553,20 @@ namespace pizzaperks.Data
             //Strip Order Id's
 
             // Add Ingredient to Order
-            orders.FirstOrDefault(c => c.OrderNumber == "ORD002")!
+            orders.FirstOrDefault(c => c.OrderNumber == "ORD005")!
             .OrderedItems.FirstOrDefault(c => c.Name == "Italian Pizza")!
             .Ingredients.Add(ingredients.FirstOrDefault(c => c.Name == "Anchovies")!);
 
             //Add cost for Ingredient to order
-            orders.FirstOrDefault(c => c.OrderNumber == "ORD002")!
+            orders.FirstOrDefault(c => c.OrderNumber == "ORD005")!
                 .OrderedItems.FirstOrDefault(c => c.Name == "Italian Pizza")!
                 .Cost += ingredients.FirstOrDefault(c => c.Name == "Anchovies")!.Cost;
 
-            orders.FirstOrDefault(c => c.OrderNumber == "ORD005")!
+            orders.FirstOrDefault(c => c.OrderNumber == "ORD002")!
             .OrderedItems.FirstOrDefault(c => c.Name == "Pepperoni Pizza")!
             .Ingredients.Add(ingredients.FirstOrDefault(c => c.Name == "Pepperoni")!);
 
-            orders.FirstOrDefault(c => c.OrderNumber == "ORD005")!
+            orders.FirstOrDefault(c => c.OrderNumber == "ORD002")!
                 .OrderedItems.FirstOrDefault(c => c.Name == "Pepperoni Pizza")!
                 .Cost += ingredients.FirstOrDefault(c => c.Name == "Pepperoni")!.Cost;
 

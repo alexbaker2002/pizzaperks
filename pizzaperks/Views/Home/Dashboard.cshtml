@@ -11,13 +11,18 @@
         <div class="dashboard mb-3 mt-5" id="manager-dashboard">
             <h3>Store Dashboard 243</h3>
 
-            <table class="table table-light table-striped table-hover mt-5">
+            <table id="in-progress-orders" class="table table-light table-striped table-hover mt-5">
                 <thead>
                     <tr>
-                    <th scope="col">#</th>
                     <th scope="col">
                             Order Number
                         </th>
+                    <th scope="col">
+                        Order Name
+                    </th>
+                    <th scope="col">
+                        Items
+                    </th>
                     <th scope="col">
                         Time
                     </th>
@@ -30,17 +35,62 @@
                 <tbody>
                 @foreach (var (index, order) in Model.Select((order, index) => (index, order)))
                 {
+                    @if(order.Status != nameof(OrderStatusEnum.Complete))
+                    {
+                        <tr scope="row" onclick="EditOrder(@order.Id)">
+                            <td>@order.OrderNumber</td>
+                            <td>@order.CustomerName</td>
+                            <td>@string.Join(" / ", order.OrderedItems.Select(l => string.Join(" / ", l.Name)))</td>
+                            <td>@order.OrderDateTime</td>
+                            <td>@order.Status</td>
+                        </tr>
 
-                   <tr scope="row" onclick="EditOrder(@order.Id)">
-                        <td>@(index + 1)</td>
-                        <td>@order.OrderNumber</td>
-                        <td>@order.OrderDateTime</td>
-                        <td>@order.OrderStatus</td>
-                   </tr>
-                    
+                    }
+                   
                 }
                 </tbody>
             </table>
+
+
+        <table id="completed-orders" class="table table-light table-striped table-hover mt-5">
+            <thead>
+                <tr>
+                    <th scope="col">
+                        Order Number
+                    </th>
+                    <th scope="col">
+                        Order Name
+                    </th>
+                    <th scope="col">
+                        Items
+                    </th>
+                    <th scope="col">
+                        Time
+                    </th>
+                    <th scope="col">
+                        Status
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var (index, order) in Model.Select((order, index) => (index, order)))
+                {
+
+                    @if (order.Status == nameof(OrderStatusEnum.Complete))
+                    {
+                        <tr scope="row" onclick="EditOrder(@order.Id)">
+                            <td>@order.OrderNumber</td>
+                            <td>@order.CustomerName</td>
+                            <td>@string.Join(" / ", order.OrderedItems.Select(l => string.Join(" / ", l.Name)))</td>
+                            <td>@order.OrderDateTime</td>
+                            <td>@order.Status</td>
+                        </tr>
+
+                    }
+                }
+            </tbody>
+        </table>
 
         </div>
 

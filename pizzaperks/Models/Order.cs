@@ -8,7 +8,7 @@ namespace pizzaperks.Models
         public string? OrderNumber { get; set; }
         public double OrderTotal { get; set; }
         public string? CustomerName { get; set; }
-        public string? OrderStatus { get; set; }
+        public string? Status { get; set; }
 
         [DisplayName("Order Date/Time")]
         public DateTime OrderDateTime { get; set; }
