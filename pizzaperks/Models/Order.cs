@@ -12,12 +12,15 @@ namespace pizzaperks.Models
 
         [DisplayName("Order Date/Time")]
         public DateTime OrderDateTime { get; set; }
+
+        public bool Alterations { get; set; } = false;
         public string? PZUserId { get; set; }
+
 
         //Nav
         public virtual PZUser? CustomerAccount { get; set; }
         public virtual ICollection<Product> OrderedItems { get; set; } = new HashSet<Product>();
-
+        public virtual ICollection<OrderModification> OrderModifications { get; set; } = new HashSet<OrderModification>();
 
     }
 }

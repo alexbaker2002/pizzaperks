@@ -33,10 +33,24 @@ namespace pizzaperks.Controllers
             }
             int cartId = user!.CartId;
 
-            Cart cart = await _cartService.GetCartWithItemsAsync(cartId);
+            Cart cart = await _cartService.GetCartWithItemsAsync(user);
 
 
             return View(cart.Products);
+        }
+
+
+        public async Task<IActionResult> Create()
+        {
+            PZUser? user = await _userManager.GetUserAsync(User);
+            if (user is null)
+            {
+                return BadRequest();
+            }
+            Cart cart = await _cartService.GetCartWithItemsAsync(user);
+
+
+            return View(cart);
         }
 
         // GET: Carts/Details/5
@@ -56,13 +70,6 @@ namespace pizzaperks.Controllers
 
             return View(cart);
         }
-
-        // GET: Carts/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
 
 
         // GET: Carts/Edit/5
@@ -116,29 +123,19 @@ namespace pizzaperks.Controllers
             return View(cart);
         }
 
-        // GET: Carts/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var cart = await _context.Carts
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (cart == null)
-            {
-                return NotFound();
-            }
 
-            return View(cart);
-        }
 
         // POST: Carts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(Product product)
         {
+            int id = 0;
+            // delete above line
+            //get users cart and remove product from it,
+            // return new list of products
+
             var cart = await _context.Carts.FindAsync(id);
             if (cart != null)
             {

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using pizzaperks.Data;
@@ -11,9 +12,11 @@ using pizzaperks.Data;
 namespace pizzaperks.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240523175510_003")]
+    partial class _003
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -162,9 +165,6 @@ namespace pizzaperks.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("PzUserId")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.ToTable("Carts");
@@ -207,7 +207,7 @@ namespace pizzaperks.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Alterations")
+                    b.Property<bool?>("Alterations")
                         .HasColumnType("boolean");
 
                     b.Property<string>("CustomerName")
@@ -233,52 +233,6 @@ namespace pizzaperks.Data.Migrations
                     b.HasIndex("PZUserId");
 
                     b.ToTable("Orders");
-                });
-
-            modelBuilder.Entity("pizzaperks.Models.OrderModification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("AddDoubleIngredient")
-                        .HasColumnType("boolean");
-
-                    b.Property<double>("CostOfModification")
-                        .HasColumnType("double precision");
-
-                    b.Property<int>("IngredientId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("LeaveIngredientOffProduct")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("LineItem")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ModifyingUserId")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("OrderNumber")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ReasonForModification")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IngredientId");
-
-                    b.HasIndex("ModifyingUserId");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("OrderModifications");
                 });
 
             modelBuilder.Entity("pizzaperks.Models.PZUser", b =>
@@ -453,27 +407,6 @@ namespace pizzaperks.Data.Migrations
                     b.Navigation("CustomerAccount");
                 });
 
-            modelBuilder.Entity("pizzaperks.Models.OrderModification", b =>
-                {
-                    b.HasOne("pizzaperks.Models.Ingredient", "Ingredient")
-                        .WithMany()
-                        .HasForeignKey("IngredientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("pizzaperks.Models.PZUser", "ModifyingUser")
-                        .WithMany()
-                        .HasForeignKey("ModifyingUserId");
-
-                    b.HasOne("pizzaperks.Models.Order", null)
-                        .WithMany("OrderModifications")
-                        .HasForeignKey("OrderId");
-
-                    b.Navigation("Ingredient");
-
-                    b.Navigation("ModifyingUser");
-                });
-
             modelBuilder.Entity("pizzaperks.Models.Product", b =>
                 {
                     b.HasOne("pizzaperks.Models.Cart", null)
@@ -492,8 +425,6 @@ namespace pizzaperks.Data.Migrations
 
             modelBuilder.Entity("pizzaperks.Models.Order", b =>
                 {
-                    b.Navigation("OrderModifications");
-
                     b.Navigation("OrderedItems");
                 });
 

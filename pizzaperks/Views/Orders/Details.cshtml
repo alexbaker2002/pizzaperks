@@ -1,35 +1,27 @@
-﻿@model pizzaperks.Models.Order
+﻿@using Microsoft.AspNetCore.Identity
+@using pizzaperks.Models.Enums;
+
+@model pizzaperks.Models.Order
+
 
 @{
-    Layout = null;
+   
 }
 
-<!DOCTYPE html>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Details</title>
-</head>
-<body>
     <div class="dashboard" id="user-dashboard">
-        <h3>You are a customer.</h3>
+        <h3>Order Details</h3>
     </div>
-<div>
-    <h4>Order</h4>
+   <div class="container text-white">
+    <h4>@Model.OrderNumber</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrderNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrderNumber)
-        </dd>
+       
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.OrderTotal)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrderTotal)
+            $@(Math.Round(Model.OrderTotal,2))
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.CustomerName)
@@ -44,10 +36,43 @@
             @Html.DisplayFor(model => model.OrderDateTime)
         </dd>
     </dl>
+       
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="container text-white mb-5">
+    <hr/>
+    @foreach (Product item in Model.OrderedItems)
+    {
+        <div class="row d-flex justify-content-center mb-1">
+            <div class="row-cols col-4">
+                <p>@item.Name</p>
+            </div>
+            <div class="row-cols col-4">
+                <p>@string.Join(" / ", item.Ingredients.Select(l => string.Join(" / ", l.Name))) @(Model.Alterations == true ? "*" : "")</p>
+            </div>
+            <div class="row-cols col-4">
+                <p>$@item.Cost</p>
+            </div>
+            <div class="row d-flex justify-content-center">
+            </div>
+        </div>
+
+    }
 </div>
-</body>
-</html>
+
+
+@if (User.IsInRole(nameof(Roles.Manager)))
+{
+    <div class="container mb-5">
+        <a class="text-white" asp-action="Edit" asp-route-id="@Model?.OrderNumber">Edit</a> |
+        <a class="text-white" asp-controller="Home" asp-action="Dashboard">Back to List</a>
+    </div>
+}
+else
+{
+    <div class="container mb-5">
+        <a class="text-white" asp-controller="Orders" asp-action="Index">Back to List</a>
+    </div>
+}
+
+

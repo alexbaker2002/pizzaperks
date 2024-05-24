@@ -28,8 +28,8 @@ namespace pizzaperks.Data
             var userManagerSvc = svcProvider.GetRequiredService<UserManager<PZUser>>();
             //Migration: This is the programmatic equivalent to Update-Database
 
+            ICartService cartService = svcProvider.GetRequiredService<ICartService>();
             IOrdersService _ordersService = svcProvider.GetRequiredService<IOrdersService>();
-
 
 
             await dbContextSvc.Database.MigrateAsync();
@@ -38,12 +38,10 @@ namespace pizzaperks.Data
 
             List<PZUser> seededUserAccounts = await SeedDemoUsersAsync(userManagerSvc);
 
-            //TODO: Seed Cart
-            await SeedUserCartsAsync(dbContextSvc);
+            await SeedCartsAsync(seededUserAccounts, cartService);
 
             //seed ingredients 
             List<Ingredient> ingredients = await SeedIngredientsAsync(dbContextSvc);
-
 
             //seed Prodcuts
             List<Product> products = await SeedProductsAsync(dbContextSvc, ingredients);
@@ -84,8 +82,10 @@ namespace pizzaperks.Data
 
                     var testUser = await userManager.CreateAsync(defaultUser, "Fw%@P!ZZ@8");
                     await userManager.AddToRoleAsync(defaultUser, Roles.Manager.ToString());
+                    Users.Add(defaultUser);
                 }
-                Users.Add(defaultUser);
+
+
             }
             catch (Exception ex)
             {
@@ -105,8 +105,8 @@ namespace pizzaperks.Data
                 Email = "christy@notmymail.com",
                 FirstName = "Christy",
                 LastName = "Customer",
-                EmailConfirmed = true,
-                CartId = 1
+                EmailConfirmed = true
+
 
             };
             try
@@ -116,8 +116,12 @@ namespace pizzaperks.Data
                 {
                     var testUser = await userManager.CreateAsync(defaultCustomer, "Fw%@P!ZZ@8");
                     await userManager.AddToRoleAsync(defaultCustomer, Roles.Customer.ToString());
+
+                    //Add user to list
+                    Users.Add(defaultCustomer);
                 }
-                Users.Add(defaultCustomer);
+
+
             }
             catch (Exception ex)
             {
@@ -135,8 +139,8 @@ namespace pizzaperks.Data
                 Email = "cari@notmymail.com",
                 FirstName = "Cari",
                 LastName = "Customer",
-                EmailConfirmed = true,
-                CartId = 2
+                EmailConfirmed = true
+
 
             };
             try
@@ -146,8 +150,10 @@ namespace pizzaperks.Data
                 {
                     var testUser = await userManager.CreateAsync(defaultCustomer1, "Fw%@P!ZZ@8");
                     await userManager.AddToRoleAsync(defaultCustomer1, Roles.Customer.ToString());
+
+                    Users.Add(defaultCustomer1);
                 }
-                Users.Add(defaultCustomer1);
+
             }
             catch (Exception ex)
             {
@@ -165,8 +171,8 @@ namespace pizzaperks.Data
                 Email = "chris@notmymail.com",
                 FirstName = "Chris",
                 LastName = "Customer",
-                EmailConfirmed = true,
-                CartId = 3
+                EmailConfirmed = true
+
 
             };
             try
@@ -176,8 +182,10 @@ namespace pizzaperks.Data
                 {
                     var testUser = await userManager.CreateAsync(defaultCustomer2, "Fw%@P!ZZ@8");
                     await userManager.AddToRoleAsync(defaultCustomer2, Roles.Customer.ToString());
+
+                    Users.Add(defaultCustomer2);
                 }
-                Users.Add(defaultCustomer2);
+
             }
             catch (Exception ex)
             {
@@ -192,28 +200,22 @@ namespace pizzaperks.Data
             return Users;
         }
 
-        private static async Task SeedUserCartsAsync(ApplicationDbContext context)
+        private static async Task SeedCartsAsync(List<PZUser> users, ICartService _cartService)
         {
-            //seed 1 cart as cart Id Num 1
-            Cart cart = new Cart();
             try
             {
-                //Have we seeded these already?
-                var dbCart = context.Carts.FirstOrDefaultAsync(c => c.Id == 1);
-                // Select ones that are not already in the database
-                await context.Carts.AddAsync(cart);
-                await context.SaveChangesAsync();
+                foreach (var user in users)
+                {
+                    //Set Users Cart
+                    Cart cart = await _cartService.CreateNewCartAsync(user);
+
+                }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
-                Console.WriteLine("*************  ERROR  *************");
-                Console.WriteLine("Error Seeding Cart.");
-                Console.WriteLine(ex.Message);
-                Console.WriteLine("***********************************");
                 throw;
             }
-
         }
 
         private static async Task<List<Ingredient>> SeedIngredientsAsync(ApplicationDbContext context)
@@ -461,7 +463,7 @@ namespace pizzaperks.Data
                     OrderNumber = "ORD006",
                     CustomerName = "Christy Customer",
                     CustomerAccount = _seededUsers.Find(user => user.UserName == "christy@notmymail.com"),
-
+                    Alterations = false,
                     Status = nameof(Models.Enums.OrderStatusEnum.Preparing),
                     OrderDateTime = DateTime.UtcNow.AddMinutes(-1),
                     OrderedItems = new List<Product>
@@ -476,6 +478,7 @@ namespace pizzaperks.Data
 
                     OrderNumber = "ORD005",
                     CustomerName = "Cari Customer",
+                    Alterations = false,
                     CustomerAccount = _seededUsers.Find(user => user.UserName == "cari@notmymail.com"),
                     Status = nameof(Models.Enums.OrderStatusEnum.Cooking),
                     OrderDateTime = DateTime.UtcNow.AddMinutes(-3),
@@ -493,6 +496,7 @@ namespace pizzaperks.Data
 
                     OrderNumber = "ORD004",
                     CustomerName = "Chris Customer",
+                    Alterations = false,
                     CustomerAccount = _seededUsers.Find(user => user.UserName == "chris@notmymail.com"),
                     Status = nameof(Models.Enums.OrderStatusEnum.Ready),
                     OrderDateTime = DateTime.UtcNow.AddMinutes(-20),
@@ -509,6 +513,7 @@ namespace pizzaperks.Data
 
                     OrderNumber = "ORD003",
                     CustomerName = "Christy Customer",
+                    Alterations = false,
                     CustomerAccount = _seededUsers.Find(user => user.UserName == "christy@notmymail.com"),
                     Status = nameof(Models.Enums.OrderStatusEnum.Complete),
                     OrderDateTime = DateTime.UtcNow.AddDays(-7),
@@ -524,6 +529,7 @@ namespace pizzaperks.Data
 
                     OrderNumber = "ORD002",
                     CustomerName = "Christy Customer",
+                    Alterations = false,
                     CustomerAccount = _seededUsers.Find(user => user.UserName == "christy@notmymail.com"),
                     Status = nameof(Models.Enums.OrderStatusEnum.Complete),
                     OrderDateTime = DateTime.UtcNow.AddDays(-10),
@@ -537,6 +543,7 @@ namespace pizzaperks.Data
                 {
                     OrderNumber = "ORD001",
                     CustomerName = "Cari Customer",
+                    Alterations = false,
                     CustomerAccount = _seededUsers.Find(user => user.UserName == "cari@notmymail.com"),
                     Status = nameof(Models.Enums.OrderStatusEnum.Complete),
                     OrderDateTime = DateTime.UtcNow.AddDays(-15),
@@ -552,23 +559,27 @@ namespace pizzaperks.Data
 
             //Strip Order Id's
 
-            // Add Ingredient to Order
-            orders.FirstOrDefault(c => c.OrderNumber == "ORD005")!
-            .OrderedItems.FirstOrDefault(c => c.Name == "Italian Pizza")!
-            .Ingredients.Add(ingredients.FirstOrDefault(c => c.Name == "Anchovies")!);
+            //// Add Ingredient to Order
+            //orders.FirstOrDefault(c => c.OrderNumber == "ORD005")!
+            //.OrderedItems.FirstOrDefault(c => c.Name == "Italian Pizza")!
+            //.Ingredients.Add(ingredients.FirstOrDefault(c => c.Name == "Anchovies")!);
 
-            //Add cost for Ingredient to order
-            orders.FirstOrDefault(c => c.OrderNumber == "ORD005")!
-                .OrderedItems.FirstOrDefault(c => c.Name == "Italian Pizza")!
-                .Cost += ingredients.FirstOrDefault(c => c.Name == "Anchovies")!.Cost;
+            //orders.FirstOrDefault(c => c.OrderNumber == "ORD005")!.Alterations = true;
 
-            orders.FirstOrDefault(c => c.OrderNumber == "ORD002")!
-            .OrderedItems.FirstOrDefault(c => c.Name == "Pepperoni Pizza")!
-            .Ingredients.Add(ingredients.FirstOrDefault(c => c.Name == "Pepperoni")!);
+            ////Add cost for Ingredient to order
+            //orders.FirstOrDefault(c => c.OrderNumber == "ORD005")!
+            //    .OrderedItems.FirstOrDefault(c => c.Name == "Italian Pizza")!
+            //    .Cost += ingredients.FirstOrDefault(c => c.Name == "Anchovies")!.Cost;
 
-            orders.FirstOrDefault(c => c.OrderNumber == "ORD002")!
-                .OrderedItems.FirstOrDefault(c => c.Name == "Pepperoni Pizza")!
-                .Cost += ingredients.FirstOrDefault(c => c.Name == "Pepperoni")!.Cost;
+            //orders.FirstOrDefault(c => c.OrderNumber == "ORD002")!
+            //.OrderedItems.FirstOrDefault(c => c.Name == "Pepperoni Pizza")!
+            //.Ingredients.Add(ingredients.FirstOrDefault(c => c.Name == "Pepperoni")!);
+
+            //orders.FirstOrDefault(c => c.OrderNumber == "ORD002")!.Alterations = true;
+
+            //orders.FirstOrDefault(c => c.OrderNumber == "ORD002")!
+            //    .OrderedItems.FirstOrDefault(c => c.Name == "Pepperoni Pizza")!
+            //    .Cost += ingredients.FirstOrDefault(c => c.Name == "Pepperoni")!.Cost;
 
 
             foreach (Order order in orders)

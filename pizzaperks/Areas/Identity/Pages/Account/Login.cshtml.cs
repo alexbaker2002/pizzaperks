@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using pizzaperks.Models;
+using pizzaperks.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace pizzaperks.Areas.Identity.Pages.Account
@@ -112,7 +113,16 @@ namespace pizzaperks.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("Demo User logged in.");
-                    return RedirectToAction("Dashboard", "Home");
+                    if (User.IsInRole(nameof(Roles.Manager)))
+                    {
+                        return RedirectToAction("Dashboard", "Home");
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+
+
                 }
                 else
                 {

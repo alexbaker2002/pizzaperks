@@ -17,14 +17,24 @@ namespace pizzaperks.Services
             _context = context;
             _logger = logger;
         }
-        public async Task<Cart> CreateNewCartAsync(Cart cart)
+        public async Task<Cart> CreateNewCartAsync(PZUser user)
         {
-            if (cart is not null)
+            if (user is not null)
                 try
                 {
-                    _context.Add(cart);
+
+                    Cart newCart = new Cart();
+                    // add user to cart
+                    newCart.User = user;
+                    newCart.PzUserId = user.Id;
+
+                    //add cart to db
+                    _context.Add(newCart);
+                    // add user
+                    user.CartId = newCart.Id;
+                    _context.Users.Update(user);
                     await _context.SaveChangesAsync();
-                    return cart;
+                    return newCart;
                 }
                 catch (Exception ex)
                 {
@@ -34,16 +44,17 @@ namespace pizzaperks.Services
             return null!;
         }
 
-        public async Task<Cart> GetCartWithItemsAsync(int? cartId)
+        public async Task<Cart> GetCartWithItemsAsync(PZUser user)
         {
             //TODO: Left off Here!!
-            if (cartId is null)
+            if (user is null)
             {
                 return new Cart();
             }
 
 
-            Cart? cart = await _context.Carts.FirstOrDefaultAsync(c => c.Id == cartId);
+
+            Cart? cart = await _context.Carts.FirstOrDefaultAsync(c => c.Id == user.CartId);
             if (cart is null)
             {
                 return new Cart();

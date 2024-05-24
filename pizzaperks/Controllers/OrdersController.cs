@@ -1,17 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using pizzaperks.Data;
 using pizzaperks.Models;
+using pizzaperks.Services.Interfaces;
 
 namespace pizzaperks.Controllers
 {
+    [Authorize]
     public class OrdersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IOrdersService _ordersService;
+        private readonly UserManager<PZUser> _userManager;
 
-        public OrdersController(ApplicationDbContext context)
+
+        public OrdersController(ApplicationDbContext context, IOrdersService ordersService, UserManager<PZUser> userManager)
         {
             _context = context;
+            _ordersService = ordersService;
+            _userManager = userManager;
         }
 
         // GET: Orders
@@ -21,15 +30,21 @@ namespace pizzaperks.Controllers
         }
 
         // GET: Orders/Details/5
-        public async Task<IActionResult> Details(int? id)
+        [Route("Orders/Details/{orderNumber?}")]
+        public async Task<IActionResult> Details(string? orderNumber)
         {
-            if (id == null)
+            if (orderNumber == null)
             {
                 return NotFound();
             }
 
-            var order = await _context.Orders
-                .FirstOrDefaultAsync(m => m.Id == id);
+            PZUser? user = await _userManager.GetUserAsync(User);
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            var order = await _ordersService.GetCustomerOrderAsync(orderNumber, user);
             if (order == null)
             {
                 return NotFound();

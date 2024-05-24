@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using pizzaperks.Models;
-using pizzaperks.Models.Enums;
 using pizzaperks.Services.Interfaces;
 using System.Diagnostics;
 
@@ -24,13 +23,10 @@ namespace pizzaperks.Controllers
             return View();
         }
 
-        [Authorize]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> Dashboard()
         {
-            if (User.IsInRole(nameof(Roles.Customer)))
-            {
-                RedirectToAction("Orders", "Details");
-            }
+
 
             //TODO: Create IOrdersService
             //Get all Orders that do not show complete and send to Dashboard View

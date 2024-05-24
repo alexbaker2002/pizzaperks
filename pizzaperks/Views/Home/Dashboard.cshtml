@@ -10,8 +10,8 @@
   
         <div class="dashboard mb-3 mt-5" id="manager-dashboard">
             <h3>Store Dashboard 243</h3>
-
-            <table id="in-progress-orders" class="table table-light table-striped table-hover mt-5">
+        <h5 class="mt-5">In Progress Orders</h5>
+            <table id="in-progress-orders" class="table table-light table-striped table-hover ">
                 <thead>
                     <tr>
                     <th scope="col">
@@ -37,10 +37,11 @@
                 {
                     @if(order.Status != nameof(OrderStatusEnum.Complete))
                     {
-                        <tr scope="row" onclick="EditOrder(@order.Id)">
+
+                        <tr scope="row" onclick="(EditOrder(`@order.OrderNumber`))">
                             <td>@order.OrderNumber</td>
                             <td>@order.CustomerName</td>
-                            <td>@string.Join(" / ", order.OrderedItems.Select(l => string.Join(" / ", l.Name)))</td>
+                            <td>@string.Join(" / ", order.OrderedItems.Select(l => string.Join(" / ", l.Name))) @(order.Alterations == true ? "*" : "")</td>
                             <td>@order.OrderDateTime</td>
                             <td>@order.Status</td>
                         </tr>
@@ -51,8 +52,9 @@
                 </tbody>
             </table>
 
+        <h5 class="mt-5">Past Orders</h5>
 
-        <table id="completed-orders" class="table table-light table-striped table-hover mt-5">
+        <table id="completed-orders" class="table table-light table-striped table-hover">
             <thead>
                 <tr>
                     <th scope="col">
@@ -79,10 +81,10 @@
 
                     @if (order.Status == nameof(OrderStatusEnum.Complete))
                     {
-                        <tr scope="row" onclick="EditOrder(@order.Id)">
+                        <tr scope="row" >
                             <td>@order.OrderNumber</td>
                             <td>@order.CustomerName</td>
-                            <td>@string.Join(" / ", order.OrderedItems.Select(l => string.Join(" / ", l.Name)))</td>
+                            <td>@string.Join(" / ", order.OrderedItems.Select(l => string.Join(" / ", l.Name))) @(order.Alterations == true ? "*" : "")</td>
                             <td>@order.OrderDateTime</td>
                             <td>@order.Status</td>
                         </tr>
@@ -101,9 +103,9 @@
 
 @section Scripts{
     <script>
-        function EditOrder(index) {
-            console.log(`Hello ${index}`);
-            var url = `@(Url.Action("Edit","Orders"))/${index}`;
+
+        function EditOrder(orderNumber) {
+            var url = `@(Url.Action("Details", "Orders"))/${orderNumber}`;
             window.location.href = url;
         }
 
