@@ -27,6 +27,7 @@ builder.Services.AddIdentity<PZUser, IdentityRole>(options => options.SignIn.Req
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IPZRolesService, PZRolesService>();
 builder.Services.AddScoped<IOrdersService, OrdersService>();
+builder.Services.AddScoped<IDataService, DataService>();
 
 
 

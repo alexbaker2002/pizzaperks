@@ -9,12 +9,14 @@ using pizzaperks.Services.Interfaces;
 namespace pizzaperks.Controllers
 {
     [Authorize]
-    public class CartController(ApplicationDbContext context, UserManager<PZUser> userManager, ICartService cartService) : Controller
+    public class CartController(ApplicationDbContext context, UserManager<PZUser> userManager,
+        ICartService cartService,
+        IDataService dataService) : Controller
     {
         private readonly ApplicationDbContext _context = context;
         private readonly UserManager<PZUser> _userManager = userManager ?? null!;
         private readonly ICartService _cartService = cartService ?? null!;
-
+        private readonly IDataService _dataService = dataService ?? null!;
 
         // GET: User Cart with Items
 
@@ -39,41 +41,37 @@ namespace pizzaperks.Controllers
             return View(cart.Products);
         }
 
-
-        public async Task<IActionResult> Create()
+        [HttpGet]
+        public async Task<IActionResult> AddItem(int? Id)
         {
+            Product? item = await _dataService.GetProductAsync(Id);
+            if (item is null)
+            {
+                return NotFound();
+            }
+
+            return View(item);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task AddItem(Product product)
+        {
+
             PZUser? user = await _userManager.GetUserAsync(User);
             if (user is null)
             {
-                return BadRequest();
-            }
-            Cart cart = await _cartService.GetCartWithItemsAsync(user);
-
-
-            return View(cart);
-        }
-
-        // GET: Carts/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
+                return;
             }
 
-            var cart = await _context.Carts
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (cart == null)
-            {
-                return NotFound();
-            }
-
-            return View(cart);
+            await _cartService.AddToCartAsync(product, user);
+            RedirectToAction("Index", "Cart");
         }
 
 
         // GET: Carts/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> EditItem(int? id)
         {
             if (id == null)
             {
@@ -93,7 +91,7 @@ namespace pizzaperks.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id")] Cart cart)
+        public async Task<IActionResult> EditItem(int id, [Bind("Id")] Cart cart)
         {
             if (id != cart.Id)
             {

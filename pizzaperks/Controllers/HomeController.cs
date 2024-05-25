@@ -1,21 +1,28 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using pizzaperks.Models;
+using pizzaperks.Models.ViewModels;
 using pizzaperks.Services.Interfaces;
 using System.Diagnostics;
 
 namespace pizzaperks.Controllers
 {
-    public class HomeController(ILogger<HomeController> logger, IOrdersService ordersService) : Controller
+    public class HomeController(ILogger<HomeController> logger, IOrdersService ordersService, IDataService dataService) : Controller
     {
 
 
         private readonly ILogger<HomeController>? _logger = logger;
         private readonly IOrdersService _ordersService = ordersService;
+        private readonly IDataService _dataService = dataService;
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            HomeViewModel model = new HomeViewModel
+            {
+                Ingredients = await _dataService.GetIngredientsAsync(),
+                Products = await _dataService.GetProductsAsync(),
+            };
+            return View(model);
         }
 
         public IActionResult Privacy()

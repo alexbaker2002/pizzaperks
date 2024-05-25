@@ -1,4 +1,7 @@
-﻿@{
+﻿@using pizzaperks.Models.ViewModels
+
+@model HomeViewModel
+@{
 	ViewData["Title"] = "Pizza Perks";
 }
 
@@ -12,7 +15,7 @@
 					<span class="subheading">Delicious</span>
 					<h1 class="mb-4">Italian Cuizine</h1>
 					<p class="mb-4 mb-md-5">Simplistic yet elegantly crafted Italian Cuisine crafted with organic ingredients</p>
-					<p><a href="#Order" class="btn btn-primary p-3 px-xl-4 py-xl-3">Order Now</a> <a href="#Menu" class="btn btn-white btn-outline-white p-3 px-xl-4 py-xl-3">View Menu</a></p>
+					<p><a href="#Order" class="btn btn-primary p-3 px-xl-4 py-xl-3">Order Now</a> </p>
 				</div>
 				<div class="col-md-6 ftco-animate">
 					<img src="images/bg_1.png" class="img-fluid" alt="">
@@ -31,7 +34,7 @@
 					<span class="subheading">Crunchy</span>
 					<h1 class="mb-4">Italian Pizza</h1>
 					<p class="mb-4 mb-md-5">Exquisite and delicious wooden stove oven baked pizzas</p>
-					<p><a href="#Order" class="btn btn-primary p-3 px-xl-4 py-xl-3">Order Now</a> <a href="#Menu" class="btn btn-white btn-outline-white p-3 px-xl-4 py-xl-3">View Menu</a></p>
+					<p><a href="#Order" class="btn btn-primary p-3 px-xl-4 py-xl-3">Order Now</a> </p>
 				</div>
 				<div class="col-md-6 ftco-animate">
 					<img src="images/bg_2.png" class="img-fluid" alt="">
@@ -50,7 +53,7 @@
 					<span class="subheading">Welcome</span>
 					<h1 class="mb-4">Pizza Perks is ready to serve you!</h1>
 					<p class="mb-4 mb-md-5">Customize a pizza to your liking by selecting the ingredients of your choosing	</p>
-					<p><a href="#Order" class="btn btn-primary p-3 px-xl-4 py-xl-3">Order Now</a> <a href="#Menu" class="btn btn-white btn-outline-white p-3 px-xl-4 py-xl-3">View Menu</a></p>
+					<p><a href="#Order" class="btn btn-primary p-3 px-xl-4 py-xl-3">Order Now</a> </p>
 				</div>
 
 			</div>
@@ -172,183 +175,40 @@
 		</div>
 	</div>
 	<div class="container-wrap">
-		<div class="row no-gutters d-flex">
-			<div class="col-lg-4 d-flex ftco-animate">
-				<div class="services-wrap d-flex">
-					<a href="#" class="img" style="background-image: url(images/pizza-1.jpg);"></a>
-					<div class="text p-4">
-						<h3>Italian Pizza</h3>
-						<p> Starting wiht a thin, crispy crust, topped sparingly with fresh tomato sauce, mozzarella cheese, and a sprinkle of basil, it's a harmonious blend of flavors that captivates the senses and pays homage to Italy's rich gastronomic tradition.</p>
-						<p class="price"><span>$20.00</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Order</a></p>
+		<div class="row no-gutters d-flex justify-content-center">
+			
+			@foreach(var (index, item) in Model.Products.Select((item, index) => (index,item)))
+			{
+				<div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 d-flex ftco-animate ">
+					<div class="services-wrap d-flex">
+						<a href="#" class="img" style="background-image: url(images/pizza-@(index).jpg);"></a>
+						<div class="text p-4">
+								<h3>@item.Name</h3>
+								<p>@item.Description</p>
+								<p class="price"><span>$@item.Cost</span> <a asp-controller="Cart" asp-action="AddItem" asp-route-id="@item.Id" class="ml-2 btn btn-white btn-outline-white">Add To Cart</a></p>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="col-lg-4 d-flex ftco-animate">
-				<div class="services-wrap d-flex">
-					<a href="#" class="img" style="background-image: url(images/pizza-2.jpg);"></a>
-					<div class="text p-4">
-						<h3>Greek Pizza</h3>
-						<p> Boasting a thicker, chewier crust and a unique medley of Mediterranean flavors. Topped with tangy tomato sauce, briny Kalamata olives, creamy feta cheese, and a dash of oregano, each slice is a savory journey to the sun-drenched shores of Greece, evoking the warmth and vibrancy of its culinary heritage.</p>
-						<p class="price"><span>$30.00</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Order</a></p>
-					</div>
-				</div>
-			</div>
-			<div class="col-lg-4 d-flex ftco-animate">
-				<div class="services-wrap d-flex">
-					<a href="#" class="img" style="background-image: url(images/pizza-3.jpg);"></a>
-					<div class="text p-4">
-						<h3>Caucasian Pizza</h3>
-						<p>Tantalizing fusion of flavors inspired by the diverse culinary landscape of the Caucasus region. With a dough that strikes a balance between fluffy and crispy, it serves as the canvas for an array of bold and savory toppings. Picture succulent lamb or juicy grilled meats, nestled atop a bed of creamy yogurt sauce, accented with earthy spices like sumac and cumin, creating a tantalizing symphony of taste that transports you to the heart of Caucasus cuisine.</p>
-						<p class="price"><span>$25.00</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Order</a></p>
-					</div>
-				</div>
-			</div>
-
-			<div class="col-lg-4 d-flex ftco-animate">
-				<div class="services-wrap d-flex">
-					<a href="#" class="img order-lg-last" style="background-image: url(images/pizza-4.jpg);"></a>
-					<div class="text p-4">
-						<h3>American Pizza:</h3>
-						<p>American pizza is a quintessential comfort food, celebrated for its generous portions and diverse range of toppings. With a soft, pillowy crust that provides the perfect base for creativity, American pizza invites experimentation and innovation. Whether piled high with classic pepperoni and gooey cheese or adorned with adventurous combinations like barbecue chicken or pineapple, each slice captures the bold, hearty spirit of American culinary culture, making it a beloved favorite for gatherings and indulgent meals alike.</p>
-						<p class="price"><span>$25.00</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Order</a></p>
-					</div>
-				</div>
-			</div>
-			<div class="col-lg-4 d-flex ftco-animate">
-				<div class="services-wrap d-flex">
-					<a href="#" class="img order-lg-last" style="background-image: url(images/pizza-5.jpg);"></a>
-					<div class="text p-4">
-						<h3>Tomatoe Pie:</h3>
-						<p>Tomato pie is a delightful twist on traditional pizza, focusing on the vibrant flavors of ripe tomatoes as the star ingredient. Featuring a thick, chewy crust that acts as the perfect foundation, tomato pie is generously layered with a rich, savory tomato sauce, infused with aromatic herbs and garlic. Topped with a sprinkling of Parmesan or Romano cheese and a drizzle of olive oil, each bite bursts with the bright, tangy essence of fresh tomatoes, creating a simple yet satisfying culinary experience that embodies the essence of Italian-American comfort food.</p>
-						<p class="price"><span>$25.00</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Order</a></p>
-					</div>
-				</div>
-			</div>
-			<div class="col-lg-4 d-flex ftco-animate">
-				<div class="services-wrap d-flex">
-					<a href="#" class="img order-lg-last" style="background-image: url(images/drink-3.jpg);"></a>
-					<div class="text p-4">
-						<h3>Beverages:</h3>
-						<p>Enjoy our variety of soft drinks as well as alchoholic drinks!</p>
-						<p class="price"><span>$2.90</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Order</a></p>
+			}
+			<div class="col-lg-12 d-flex ftco-animate">
+				<div class="services-wrap d-inline-flex">
+					<div class="text p-4 w-100">
+						<h3>Ingredients:</h3>
+						<div class="row row-cols-4 px-2">
+							@foreach (Ingredient extra in Model.Ingredients)
+							{
+								<div class="col">
+								<p>@extra.Name ........ $@extra.Cost.ToString("0.00")</p>
+								</div>
+							}
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<div class="container">
-		<div class="row justify-content-center mb-5 pb-3 mt-5 pt-5" id="Menu">
-			<div class="col-md-7 heading-section text-center ftco-animate">
-				<h2 class="mb-4">Our Menu Pricing</h2>
-				<p class="flip"><span class="deg1"></span><span class="deg2"></span><span class="deg3"></span></p>
-				<p class="mt-5">Prices so low you'll think we charged you nothing!</p>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-6">
-				<div class="pricing-entry d-flex ftco-animate">
-					<div class="img" style="background-image: url(images/pizza-1.jpg);"></div>
-					<div class="desc pl-3">
-						<div class="d-flex text align-items-center">
-							<h3><span>Italian Pizza</span></h3>
-							<span class="price">$20.00</span>
-						</div>
-						<div class="d-block">
-							<p>thin and crispy crust, topped sparingly with fresh tomato sauce, mozzarella cheese, and a sprinkle of basil</p>
-						</div>
-					</div>
-				</div>
-				<div class="pricing-entry d-flex ftco-animate">
-					<div class="img" style="background-image: url(images/pizza-2.jpg);"></div>
-					<div class="desc pl-3">
-						<div class="d-flex text align-items-center">
-							<h3><span>Hawaiian Pizza</span></h3>
-							<span class="price">$29.00</span>
-						</div>
-						<div class="d-block">
-							<p>Pizza crust, Tomoato sauce, Mozzarella cheese, Ham, Pinneapple chunks</p>
-						</div>
-					</div>
-				</div>
-				<div class="pricing-entry d-flex ftco-animate">
-					<div class="img" style="background-image: url(images/pizza-3.jpg);"></div>
-					<div class="desc pl-3">
-						<div class="d-flex text align-items-center">
-							<h3><span>Greek Pizza</span></h3>
-							<span class="price">$20.00</span>
-						</div>
-						<div class="d-block">
-							<p>Pizza crust, Tomato sauce, Feta cheese, Kalamata olives, Red onion, Fresh tomatoes, fresh spinach leaves, olive oil, oregano, garlic, salt and pepper.</p>
-						</div>
-					</div>
-				</div>
-				<div class="pricing-entry d-flex ftco-animate">
-					<div class="img" style="background-image: url(images/pizza-4.jpg);"></div>
-					<div class="desc pl-3">
-						<div class="d-flex text align-items-center">
-							<h3><span>Bacon Crispy Thins</span></h3>
-							<span class="price">$25.00</span>
-						</div>
-						<div class="d-block">
-							<p>Slices of crispy and juicy bacon</p>
-						</div>
-					</div>
-				</div>
-			</div>
 
-			<div class="col-md-6">
-				<div class="pricing-entry d-flex ftco-animate">
-					<div class="img" style="background-image: url(images/pizza-5.jpg);"></div>
-					<div class="desc pl-3">
-						<div class="d-flex text align-items-center">
-							<h3><span>Hawaiian Special</span></h3>
-							<span class="price">$49.91</span>
-						</div>
-						<div class="d-block">
-							<p>Pizza crust, Tomoato sauce, Mozzarella cheese, Ham, Pinneapple chunks, Topped with lettuce</p>
-						</div>
-					</div>
-				</div>
-				<div class="pricing-entry d-flex ftco-animate">
-					<div class="img" style="background-image: url(images/pizza-6.jpg);"></div>
-					<div class="desc pl-3">
-						<div class="d-flex text align-items-center">
-							<h3><span>Ultimate Overload</span></h3>
-							<span class="price">$20.00</span>
-						</div>
-						<div class="d-block">
-							<p>Pizza crust, Tomato sauce, Mozzarella cheese, Pepperoni slices, Italian sausage, Ham, Bacon, Mushrooms, Red onions, Bell peppers</p>
-						</div>
-					</div>
-				</div>
-				<div class="pricing-entry d-flex ftco-animate">
-					<div class="img" style="background-image: url(images/pizza-7.jpg);"></div>
-					<div class="desc pl-3">
-						<div class="d-flex text align-items-center">
-							<h3><span>Bacon Pizza</span></h3>
-							<span class="price">$20.00</span>
-						</div>
-						<div class="d-block">
-							<p>Pizza crust, Tomato sauce, Mozzarella cheese, Pepperoni slices, Bacon crisps</p>
-						</div>
-					</div>
-				</div>
-				<div class="pricing-entry d-flex ftco-animate">
-					<div class="img" style="background-image: url(images/pizza-8.jpg);"></div>
-					<div class="desc pl-3">
-						<div class="d-flex text align-items-center">
-							<h3><span>Ham &amp; Pineapple</span></h3>
-							<span class="price">$20.00</span>
-						</div>
-						<div class="d-block">
-							<p>Pizza crust, Tomato sauce, Mozzarella cheese, Pepperoni slices, Ham, Pinneapple</p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
 </section>
 
 <section class="ftco-gallery">
@@ -435,186 +295,7 @@
 	</div>
 </section>
 
-<section class="ftco-menu" >
-	<div class="container-fluid">
-		<div class="row d-md-flex">
-			<div class="col-lg-4 ftco-animate img f-menu-img mb-5 mb-md-0" style="background-image: url(images/about.jpg);">
-			</div>
-			<div class="col-lg-8 ftco-animate p-md-5">
-				<div class="row">
-					<div class="col-md-12 nav-link-wrap mb-5">
-						<div class="nav ftco-animate nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-							<a class="nav-link active" id="v-pills-1-tab" data-toggle="pill" href="#v-pills-1" role="tab" aria-controls="v-pills-1" aria-selected="true">Pizza</a>
 
-							<a class="nav-link" id="v-pills-2-tab" data-toggle="pill" href="#v-pills-2" role="tab" aria-controls="v-pills-2" aria-selected="false">Drinks</a>
-
-							<a class="nav-link" id="v-pills-3-tab" data-toggle="pill" href="#v-pills-3" role="tab" aria-controls="v-pills-3" aria-selected="false">Burgers</a>
-
-							<a class="nav-link" id="v-pills-4-tab" data-toggle="pill" href="#v-pills-4" role="tab" aria-controls="v-pills-4" aria-selected="false">Pasta</a>
-						</div>
-					</div>
-					<div class="col-md-12 d-flex align-items-center">
-
-						<div class="tab-content ftco-animate" id="v-pills-tabContent">
-
-							<div class="tab-pane fade show active" id="v-pills-1" role="tabpanel" aria-labelledby="v-pills-1-tab">
-								<div class="row">
-									<div class="col-md-4 text-center">
-										<div class="menu-wrap">
-											<a href="#" class="menu-img img mb-4" style="background-image: url(images/pizza-1.jpg);"></a>
-											<div class="text">
-												<h3><a href="#">Itallian Pizza</a></h3>
-												<p>Pizza crust, Tomatoes grown locally, Mozzarella cheese, Basil leaves, Virgin olive oil, Garlic, Oregano, Parmigiano-Reggiano cheese, Salt, Black pepper</p>
-												<p class="price"><span>$2.90</span></p>
-												<p><a href="#" class="btn btn-white btn-outline-white">Add to cart</a></p>
-											</div>
-										</div>
-									</div>
-									<div class="col-md-4 text-center">
-										<div class="menu-wrap">
-											<a href="#" class="menu-img img mb-4" style="background-image: url(images/pizza-2.jpg);"></a>
-											<div class="text">
-												<h3><a href="#">Itallian Pizza</a></h3>
-												<p></p>
-												<p class="price"><span>$2.90</span></p>
-												<p><a href="#" class="btn btn-white btn-outline-white">Add to cart</a></p>
-											</div>
-										</div>
-									</div>
-									<div class="col-md-4 text-center">
-										<div class="menu-wrap">
-											<a href="#" class="menu-img img mb-4" style="background-image: url(images/pizza-3.jpg);"></a>
-											<div class="text">
-												<h3><a href="#">Itallian Pizza</a></h3>
-												<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-												<p class="price"><span>$2.90</span></p>
-												<p><a href="#" class="btn btn-white btn-outline-white">Add to cart</a></p>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<div class="tab-pane fade" id="v-pills-2" role="tabpanel" aria-labelledby="v-pills-2-tab">
-								<div class="row">
-									<div class="col-md-4 text-center">
-										<div class="menu-wrap">
-											<a href="#" class="menu-img img mb-4" style="background-image: url(images/drink-1.jpg);"></a>
-											<div class="text">
-												<h3><a href="#">Lemonade Juice</a></h3>
-												<p>Locally grown freshly squeezed and organically produced lemonade.</p>
-												<p class="price"><span>$2.90</span></p>
-												<p><a href="#" class="btn btn-white btn-outline-white">Add to cart</a></p>
-											</div>
-										</div>
-									</div>
-									<div class="col-md-4 text-center">
-										<div class="menu-wrap">
-											<a href="#" class="menu-img img mb-4" style="background-image: url(images/drink-2.jpg);"></a>
-											<div class="text">
-												<h3><a href="#">Pineapple Juice</a></h3>
-												<p>Organic and locally produced Pinneapple juice.</p>
-												<p class="price"><span>$2.90</span></p>
-												<p><a href="#" class="btn btn-white btn-outline-white">Add to cart</a></p>
-											</div>
-										</div>
-									</div>
-									<div class="col-md-4 text-center">
-										<div class="menu-wrap">
-											<a href="#" class="menu-img img mb-4" style="background-image: url(images/drink-3.jpg);"></a>
-											<div class="text">
-												<h3><a href="#">Soda Drinks</a></h3>
-												<p>Pepsi, Mountain Dew, Sprite, Coke, Mountain Dew.</p>
-												<p class="price"><span>$2.90</span></p>
-												<p><a href="#" class="btn btn-white btn-outline-white">Add to cart</a></p>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<div class="tab-pane fade" id="v-pills-3" role="tabpanel" aria-labelledby="v-pills-3-tab">
-								<div class="row">
-									<div class="col-md-4 text-center">
-										<div class="menu-wrap">
-											<a href="#" class="menu-img img mb-4" style="background-image: url(images/burger-1.jpg);"></a>
-											<div class="text">
-												<h3><a href="#">Royal Burger</a></h3>
-												<p>Hamburger buns, Hamburger Patty, Tomato, Lettuce, Mozzarella Cheese, Egg </p>
-												<p class="price"><span>$8.90</span></p>
-												<p><a href="#" class="btn btn-white btn-outline-white">Add to cart</a></p>
-											</div>
-										</div>
-									</div>
-									<div class="col-md-4 text-center">
-										<div class="menu-wrap">
-											<a href="#" class="menu-img img mb-4" style="background-image: url(images/burger-2.jpg);"></a>
-											<div class="text">
-												<h3><a href="#">Single Cheese Burger</a></h3>
-												<p>Hamburger buns, Hamburger Patty, Tomato, Lettuce, Mozzarella Cheese,</p>
-												<p class="price"><span>$8.90</span></p>
-												<p><a href="#" class="btn btn-white btn-outline-white">Add to cart</a></p>
-											</div>
-										</div>
-									</div>
-									<div class="col-md-4 text-center">
-										<div class="menu-wrap">
-											<a href="#" class="menu-img img mb-4" style="background-image: url(images/burger-3.jpg);"></a>
-											<div class="text">
-												<h3><a href="#">All-Burger</a></h3>
-												<p>Hamburger buns, Hamburger Patty, Tomato, Lettuce, American Cheese, Pickles</p>
-												<p class="price"><span>$10.90</span></p>
-												<p><a href="#" class="btn btn-white btn-outline-white">Add to cart</a></p>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<div class="tab-pane fade" id="v-pills-4" role="tabpanel" aria-labelledby="v-pills-4-tab">
-								<div class="row">
-									<div class="col-md-4 text-center">
-										<div class="menu-wrap">
-											<a href="#" class="menu-img img mb-4" style="background-image: url(images/pasta-1.jpg);"></a>
-											<div class="text">
-												<h3><a href="#">Basic Pasta </a></h3>
-												<p>Pasta, Tomato sauce, Basil leaves, Salt, Pepper.</p>
-												<p class="price"><span>$13.90</span></p>
-												<p><a href="#" class="btn btn-white btn-outline-white">Add to cart</a></p>
-											</div>
-										</div>
-									</div>
-									<div class="col-md-4 text-center">
-										<div class="menu-wrap">
-											<a href="#" class="menu-img img mb-4" style="background-image: url(images/pasta-2.jpg);"></a>
-											<div class="text">
-												<h3><a href="#">Cheesy Pasta</a></h3>
-												<p>American cheese pasta, Onion slices, Parsley, Salt and Pepper.</p>
-												<p class="price"><span>$14.90</span></p>
-												<p><a href="#" class="btn btn-white btn-outline-white">Add to cart</a></p>
-											</div>
-										</div>
-									</div>
-									<div class="col-md-4 text-center">
-										<div class="menu-wrap">
-											<a href="#" class="menu-img img mb-4" style="background-image: url(images/pasta-3.jpg);"></a>
-											<div class="text">
-												<h3><a href="#">Spaghetti</a></h3>
-												<p>Spaghetti noodles, Tomato sauce, Sausage, Tomato Basil leaves</p>
-												<p class="price"><span>$15.90</span></p>
-												<p><a href="#" class="btn btn-white btn-outline-white">Add to cart</a></p>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</section>
 
 <section class="ftco-section">
 	<div class="container">

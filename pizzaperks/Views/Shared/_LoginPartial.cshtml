@@ -1,7 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using pizzaperks.Models.Enums;
+@using pizzaperks.Services.Interfaces
 @inject SignInManager<PZUser> SignInManager
 @inject UserManager<PZUser> UserManager
+@inject  ICartService _cartService;
 
 
 <ul class="navbar-nav">
@@ -9,7 +11,7 @@
 {
 
     PZUser? UserInfo = await UserManager.GetUserAsync(User);
-
+        Cart? userCart = await _cartService.GetCartWithItemsAsync(UserInfo!);
 
     <li class="nav-item">
             <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage"><span class="icon-user"></span> @(UserInfo!.FullName ?? User.Identity!.Name)</a>
@@ -22,9 +24,19 @@
         }
         else
         {
-            <li class="nav-item">
-                <a class="nav-link text-light" asp-controller="Cart" asp-action="Index" title="Cart"><span class="icon-opencart"> Cart</span></a>
-            </li>
+            if (userCart.Products.Any())
+            {
+                <li class="nav-item">
+                    <a class="nav-link text-light" asp-controller="Cart" asp-action="Index" title="Cart"><span class="icon-shopping-cart"> Cart</span></a>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item">
+                    <a class="nav-link text-light" asp-controller="Cart" asp-action="Index" title="Cart"><span class="icon-opencart"> Cart</span></a>
+                </li>
+            }
+          
         }
 }
 else

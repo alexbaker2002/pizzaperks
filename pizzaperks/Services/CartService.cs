@@ -17,6 +17,17 @@ namespace pizzaperks.Services
             _context = context;
             _logger = logger;
         }
+
+        public async Task AddToCartAsync(Product product, PZUser user)
+        {
+            Cart? cart = await GetCartWithItemsAsync(user);
+            if (cart == null) { return; }
+            cart.Products.Add(product);
+            _context.Carts.Update(cart);
+            await _context.SaveChangesAsync();
+
+        }
+
         public async Task<Cart> CreateNewCartAsync(PZUser user)
         {
             if (user is not null)
