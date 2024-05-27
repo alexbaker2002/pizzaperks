@@ -12,7 +12,7 @@ using pizzaperks.Data;
 namespace pizzaperks.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240527134659_001")]
+    [Migration("20240527220550_001")]
     partial class _001
     {
         /// <inheritdoc />
@@ -282,23 +282,11 @@ namespace pizzaperks.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("AddDoubleIngredient")
-                        .HasColumnType("boolean");
-
                     b.Property<int?>("CartProductId")
                         .HasColumnType("integer");
 
                     b.Property<double>("CostOfModification")
                         .HasColumnType("double precision");
-
-                    b.Property<int>("IngredientId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("LeaveIngredientOffProduct")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("LineItem")
-                        .HasColumnType("integer");
 
                     b.Property<string>("ModifyingUserId")
                         .HasColumnType("text");
@@ -315,8 +303,6 @@ namespace pizzaperks.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CartProductId");
-
-                    b.HasIndex("IngredientId");
 
                     b.HasIndex("ModifyingUserId");
 
@@ -533,12 +519,6 @@ namespace pizzaperks.Data.Migrations
                         .WithMany("Modifications")
                         .HasForeignKey("CartProductId");
 
-                    b.HasOne("pizzaperks.Models.Ingredient", "Ingredient")
-                        .WithMany()
-                        .HasForeignKey("IngredientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("pizzaperks.Models.PZUser", "ModifyingUser")
                         .WithMany()
                         .HasForeignKey("ModifyingUserId");
@@ -546,8 +526,6 @@ namespace pizzaperks.Data.Migrations
                     b.HasOne("pizzaperks.Models.Order", "Order")
                         .WithMany("OrderModifications")
                         .HasForeignKey("OrderId");
-
-                    b.Navigation("Ingredient");
 
                     b.Navigation("ModifyingUser");
 

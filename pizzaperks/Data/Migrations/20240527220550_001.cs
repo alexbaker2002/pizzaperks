@@ -276,11 +276,7 @@ namespace pizzaperks.Data.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     OrderNumber = table.Column<string>(type: "text", nullable: true),
-                    LineItem = table.Column<int>(type: "integer", nullable: false),
-                    IngredientId = table.Column<int>(type: "integer", nullable: false),
                     CostOfModification = table.Column<double>(type: "double precision", nullable: false),
-                    LeaveIngredientOffProduct = table.Column<bool>(type: "boolean", nullable: false),
-                    AddDoubleIngredient = table.Column<bool>(type: "boolean", nullable: false),
                     ReasonForModification = table.Column<string>(type: "text", nullable: true),
                     ModifyingUserId = table.Column<string>(type: "text", nullable: true),
                     OrderId = table.Column<int>(type: "integer", nullable: true),
@@ -299,12 +295,6 @@ namespace pizzaperks.Data.Migrations
                         column: x => x.CartProductId,
                         principalTable: "CartProducts",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_OrderModifications_Ingredients_IngredientId",
-                        column: x => x.IngredientId,
-                        principalTable: "Ingredients",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OrderModifications_Orders_OrderId",
                         column: x => x.OrderId,
@@ -375,11 +365,6 @@ namespace pizzaperks.Data.Migrations
                 column: "CartProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderModifications_IngredientId",
-                table: "OrderModifications",
-                column: "IngredientId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_OrderModifications_ModifyingUserId",
                 table: "OrderModifications",
                 column: "ModifyingUserId");
@@ -414,19 +399,19 @@ namespace pizzaperks.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Ingredients");
+
+            migrationBuilder.DropTable(
                 name: "OrderModifications");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Ingredients");
+                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "CartProducts");
-
-            migrationBuilder.DropTable(
-                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "Carts");
