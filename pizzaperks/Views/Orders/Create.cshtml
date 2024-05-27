@@ -1,7 +1,7 @@
-﻿@model pizzaperks.Models.ViewModels.CartIndexViewModel
+﻿@model pizzaperks.Models.Order
 
 @{
-    ViewData["Title"] = "My Cart";
+    ViewData["Title"] = $"{Model.OrderNumber}";
    
 }
 
@@ -10,33 +10,47 @@
 		<div class="container">
 			<div class="row justify-content-center mb-5 pb-3">
 				<div class="col-md-7 heading-section ftco-animate text-center">
-					<h2 class="mb-4">My Cart</h2>
-					<p>Remove or edit your items to complete your order!</p>
+					<h2 class="mb-4">@Model.OrderNumber</h2>
+					<p>Thanks for your order!</p>
 				</div>
 				<div class="col-md-7 heading-section ftco-animate text-center">
-					 <a asp-controller="Orders" asp-action="Create" class="ml-2 btn btn-white btn-outline-white">Check Out</a>
 					<h3 class="price mt-3">$@Model.OrderTotal</h3>
 				 </div>
-				
 			</div>
 		</div>
 		<div class="container-wrap">
 			<div class="row no-gutters d-flex justify-content-center">
 
-				@foreach (var (index, item) in Model.CartProducts!.Select((item, index) => (index, item)))
+				@foreach (var (index, item) in Model.OrderedItems!.Select((item, index) => (index, item)))
 				{
 					<div class="col-sm-12 col-md-6 col-lg-6 col-xl-12 d-flex ftco-animate ">
 						<div class="services-wrap d-flex justify-content-center">
 							<div class="text p-4">
 								<h3>@item.Name</h3>
 								<p>@item.Description</p>
-								<p class="price"><span>$@item.Cost</span> <a asp-controller="Cart" asp-action="EditCartItem" asp-route-id="@item.Id"  class="ml-2 btn btn-white btn-outline-white">Edit</a><a asp-controller="Cart" asp-action="RemoveProductFromCart" asp-route-id="@item.Id"   class="ml-2 btn btn-white btn-outline-white">Remove</a></p>
-								
+								<p class="price"><span>$@item.Cost</span></p>
+								<span>
+								@foreach (Ingredient ingredient in item.Ingredients)
+								{
+										@($"{ingredient.Name} ") 
+								}
+								</span>
 							</div>
 						</div>
 					</div>
 				}
-		
+				@if (Model.OrderModifications.Any())
+				{
+					foreach(OrderModification mods in Model.OrderModifications)
+					{
+						<div class="col-sm-12 col-md-6 col-lg-6 col-xl-12 d-flex ftco-animate ">
+							<div class="services-wrap d-flex justify-content-center">
+								@mods.ReasonForModification | @mods.CostOfModification
+							</div>
+						</div>
+					}
+				}
+
 			</div>
 		</div>
 
