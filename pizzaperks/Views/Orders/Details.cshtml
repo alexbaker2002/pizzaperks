@@ -38,7 +38,9 @@
 							<div class="text p-4">
 								<h3>@item.Name</h3>
 								<p>@item.Description</p>
-								<p>@foreach (Ingredient ingredient in item.Ingredients) { @($"{ingredient}") }</p>
+								<p>@foreach (Ingredient ingredient in item.Ingredients) {
+									@($"{ingredient.Name} ") 
+								}</p>
 								<p class="price"><span>$@item.Cost</span> </p>
 								
 
