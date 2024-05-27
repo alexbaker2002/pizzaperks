@@ -1,0 +1,40 @@
+﻿@model pizzaperks.Models.OrderModification
+
+@{
+    ViewData["Title"] = $"{Model.OrderNumber}";
+
+}
+
+
+<h4 class="mt-5">OrderModification</h4>
+
+<section class="ftco-section" id="OrderDetails">
+    <div class="container">
+        <div class="row justify-content-center mb-5 pb-3">
+            <div class="col-md-7 heading-section ftco-animate text-center">
+                <div class="col-12 heading-section ftco-animate text-center">
+                    <h2 class="mb-4">@Model.OrderNumber | @Model.Order!.CustomerName</h2>
+                </div>
+
+                <form asp-controller="Orders" asp-action="ManagerOverride" method="Post">
+                    
+                    <input asp-for="OrderNumber" value="@Model.OrderNumber" hidden />
+                    <div class="form-group">
+                        <label asp-for="CostOfModification" class="control-label text-white">Cost Difference $-1.50</label>
+                        <input asp-for="CostOfModification" class="form-control" />
+                        <span asp-validation-for="CostOfModification" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ReasonForModification" class="control-label text-white">Reason why price is changed.</label>
+                        <textarea asp-for="ReasonForModification" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="ReasonForModification" class="text-danger"></span>
+                       </div>
+                    <div class="form-group">
+                        <input type="submit" value="Add" class="ml-2 btn btn-white btn-outline-white mt-2" />
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+ </section>

@@ -1,69 +1,83 @@
 ﻿@model pizzaperks.Models.Order
 
 @{
-    Layout = null;
+	ViewData["Title"] = $"{Model.OrderNumber}";
+
 }
 
-<!DOCTYPE html>
+<div class="cart-container">
+	<section class="ftco-section" id="OrderDetails">
+		<div class="container">
+			<div class="row justify-content-center mb-5 pb-3">
+				<div class="col-md-7 heading-section ftco-animate text-center">
+					<h2 class="mb-4">@Model.OrderNumber | @Model.CustomerName</h2>
+					
+				</div>
+				<div class="col-md-7 heading-section ftco-animate text-center">
+					<h3 class="price mt-3">Total: @Model.OrderTotal</h3>
+				</div>
+				<div class="col-md-7 heading-section ftco-animate text-center">
+					<h3 class="price mt-3">Order Status: @Model.Status</h3>
+				</div>
+				<div class="col-md-7 heading-section ftco-animate text-center">
+					@if (User.IsInRole("Manager"))
+					{
+						<a class="ml-2 btn btn-white btn-outline-white mt-2" asp-action="ManagerOverride" asp-controller="Orders" asp-route-orderNumber="@Model.OrderNumber">Override Order</a>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Details</title>
-</head>
-<body>
+					}
+				</div>
+			</div>
+		</div>
+		<div class="container-wrap">
+			<div class="row no-gutters d-flex justify-content-center">
 
-<div>
-    <h4>Order</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrderNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrderNumber)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrderTotal)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrderTotal)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CustomerName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CustomerName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrderDateTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrderDateTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Alterations)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Alterations)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CustomerAccount)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CustomerAccount.Id)
-        </dd>
-    </dl>
+				@foreach (var (index, item) in Model.OrderedItems!.Select((item, index) => (index, item)))
+				{
+					<div class="col-sm-12 col-md-6 col-lg-6 col-xl-12 d-flex ftco-animate ">
+						<div class="services-wrap d-flex justify-content-center">
+							<div class="text p-4">
+								<h3>@item.Name</h3>
+								<p>@item.Description</p>
+								<p>@foreach (Ingredient ingredient in item.Ingredients) { @($"{ingredient}") }</p>
+								<p class="price"><span>$@item.Cost</span> </p>
+								
+
+							</div>
+						</div>
+					</div>
+				}
+
+			</div>
+		</div>
+		<div class="container-wrap">
+			<div class="row no-gutters d-flex justify-content-center">
+
+				@foreach (var (index, item) in Model.OrderModifications!.Select((item, index) => (index, item)))
+				{
+					<div class="col-sm-12 col-md-6 col-lg-6 col-xl-12 d-flex ftco-animate ">
+						<div class="services-wrap d-flex justify-content-center">
+							<div class="text p-4">
+								<h3>$@item.CostOfModification.ToString("0.00")</h3>
+								<p>@item.ReasonForModification</p>
+								<p>@item.ModifyingUser!.FullName</p>
+							</div>
+						</div>
+					</div>
+				}
+
+			</div>
+		</div>
+
+	</section>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
-</body>
-</html>
+
+
+
+
+
+
+
+
+@section Scripts {
+
+}

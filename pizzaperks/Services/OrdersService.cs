@@ -13,15 +13,36 @@ namespace pizzaperks.Services
 		private readonly UserManager<PZUser> _userManager = userManager;
 		private readonly ICartService _cartSerivce = cartSerivce;
 
+		public async Task AddModificationAsync(OrderModification modification, PZUser user)
+		{
+
+			Order order = await GetCustomerOrderAsync(modification.OrderNumber!, user);
+			order.Alterations = true;
+			modification.Order = order;
+			_context.OrderModifications.Add(modification);
+			_context.Orders.Update(order);
+
+			order.OrderTotal = CalculateOrderTotal(order);
+
+			_context.Orders.Update(order);
+
+			await _context.SaveChangesAsync();
+
+
+		}
+
 		public double CalculateOrderTotal(Order order)
 		{
+			double total = order.OrderedItems.Sum(item => item.Cost);
 			if (order.Alterations)
 			{
-				//TODO: Modify for Price CalculationS
+				foreach (OrderModification mod in order.OrderModifications)
+				{
+					total += mod.CostOfModification;
+				}
 			}
 
-			double total = order.OrderedItems.Sum(item => item.Cost);
-			return total + (total * 0.0775);
+			return Math.Round(total + (total * 0.0775), 2);
 		}
 
 		public async Task<Order> CancelOrderAsync(Order order)
@@ -195,6 +216,7 @@ namespace pizzaperks.Services
 			Order? order = await _context.Orders
 				.Include(o => o.OrderedItems)
 					.ThenInclude(o => o.Ingredients).
+					Include(o => o.OrderModifications).
 					FirstOrDefaultAsync(o => o.OrderNumber == orderNumber.ToUpper());
 			if (order is null)
 			{
@@ -203,7 +225,7 @@ namespace pizzaperks.Services
 
 			if (await _userManager.IsInRoleAsync(user, "Customer"))
 			{
-				if (order.PZUserId == user.Id)
+				if (order.PZUserId == user.Id || await _userManager.IsInRoleAsync(user, "Manager"))
 				{
 					return order;
 				}

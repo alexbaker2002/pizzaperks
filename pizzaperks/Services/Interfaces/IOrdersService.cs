@@ -19,5 +19,6 @@ namespace pizzaperks.Services.Interfaces
 		Task<Order> ChangeOrderAsync(Order order, PZUser pZUser, OrderModification modification);
 
 		double CalculateOrderTotal(Order order);
+		Task AddModificationAsync(OrderModification modification, PZUser user);
 	}
 }

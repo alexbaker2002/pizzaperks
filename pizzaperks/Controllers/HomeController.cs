@@ -7,47 +7,51 @@ using System.Diagnostics;
 
 namespace pizzaperks.Controllers
 {
-    public class HomeController(ILogger<HomeController> logger, IOrdersService ordersService, IDataService dataService) : Controller
-    {
+	public class HomeController(ILogger<HomeController> logger, IOrdersService ordersService, IDataService dataService) : Controller
+	{
 
 
-        private readonly ILogger<HomeController>? _logger = logger;
-        private readonly IOrdersService _ordersService = ordersService;
-        private readonly IDataService _dataService = dataService;
+		private readonly ILogger<HomeController>? _logger = logger;
+		private readonly IOrdersService _ordersService = ordersService;
+		private readonly IDataService _dataService = dataService;
 
-        public async Task<IActionResult> Index()
-        {
-            HomeViewModel model = new HomeViewModel
-            {
-                Ingredients = await _dataService.GetIngredientsAsync(),
-                Products = await _dataService.GetProductsAsync(),
-            };
-            return View(model);
-        }
+		public async Task<IActionResult> Index()
+		{
+			HomeViewModel model = new HomeViewModel
+			{
+				Ingredients = await _dataService.GetIngredientsAsync(),
+				Products = await _dataService.GetProductsAsync(),
+			};
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [Authorize(Roles = "Manager")]
-        public async Task<IActionResult> Dashboard()
-        {
+			model.Ingredients = model.Ingredients.DistinctBy(c => c.Name).ToList();
 
 
-            //TODO: Create IOrdersService
-            //Get all Orders that do not show complete and send to Dashboard View
+			return View(model);
+		}
 
-            List<Order> orders = await _ordersService.GetAllOrdersAsync();
+		public IActionResult Privacy()
+		{
+			return View();
+		}
+
+		[Authorize(Roles = "Manager")]
+		public async Task<IActionResult> Dashboard()
+		{
 
 
-            return View(orders);
-        }
+			//TODO: Create IOrdersService
+			//Get all Orders that do not show complete and send to Dashboard View
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-    }
+			List<Order> orders = await _ordersService.GetAllOrdersAsync();
+
+
+			return View(orders);
+		}
+
+		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+		public IActionResult Error()
+		{
+			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+		}
+	}
 }

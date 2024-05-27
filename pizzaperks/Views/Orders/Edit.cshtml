@@ -1,70 +1,64 @@
-﻿@model pizzaperks.Models.Order
+﻿@model pizzaperks.Models.ViewModels.EditCartProductViewModel
 
 @{
-    Layout = null;
+	ViewData["Title"] = "Edit Ordered Item";
+
 }
+<div class="cart-container">
+	<section class="ftco-section" id="Cart">
+		<div class="container">
+			<div class="row justify-content-center mb-5 pb-3">
+				<div class="col-md-7 heading-section ftco-animate text-center">
+					<h2 class="mb-4">@Model.CartProduct!.Name</h2>
+					<p>Remove or edit your items to complete your order!</p>
+				</div>
+				<div class="col-md-7 heading-section ftco-animate text-center">
+					<h3 class="price mt-3">$@Model.CartProduct!.Cost</h3>
+					<a asp-controller="Orders" asp-action="Details" asp-route-orderNumber="@Model.OrderNumber" class="ml-2 btn btn-white btn-outline-white">Back to Order</a>
+				</div>
 
-<!DOCTYPE html>
+			</div>
+		</div>
+		<div class="container">
+			<div class="row row-cols-12 no-gutters d-flex justify-content-center">
+				<h3 class="mb-2">Included</h3>
+				@foreach (var (index, item) in Model.CartProduct!.Ingredients!.Select((item, index) => (index, item)))
+				{
+					<div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 d-flex ftco-animate justify-content-center">
+						<div class="services-wrap d-flex ">
+							<div class="text p-5" style="width:100% !important; text-align:center;">
+								<h3>@item.Name</h3>
+								<p>@item.Description</p>
+								<p class="price px-4"><span>$@item.Cost.ToString("0.00")</span> <a asp-controller="Orders" asp-action="ManagerOverride" asp-route-orderNumber="@Model.OrderNumber" asp-route-id="@item.Id"  class="ml-2 btn btn-white btn-outline-white">Remove</a></p>
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+		<div class="container">
+			<div class="row row-cols-12 no-gutters d-flex justify-content-center mt-5">
+				<h3 class="mb-2">Extra</h3>
+				@foreach (var (index, item) in Model.DefaultIngredients!.Select((item, index) => (index, item)))
+				{
+					@if (!Model.CartProduct.Ingredients.Any(i => i.Name == item.Name))
+					{
+						<div class="col-sm-12 col-md-6 col-lg-6 col-xl-3 d-flex ftco-animate justify-content-center" )}>
+							<div class="services-wrap d-flex ">
+								<div class="text p-5" style="width:100% !important; text-align:center;">
+									<h3>@item.Name</h3>
+									<p>@item.Description</p>
+									<p class="price px-4"><span>$@item.Cost.ToString("0.00")</span> <a asp-controller="Cart" asp-action="AddIngredient" asp-route-id="@item.Id" asp-route-productId="@Model.CartProduct.Id" class="ml-2 btn btn-white btn-outline-white">Add</a></p>
+								</div>
+							</div>
+						</div>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Edit</title>
-</head>
-<body>
+					}
+				}
+			</div>
+		</div>
 
-<h4>Order</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="OrderNumber" class="control-label"></label>
-                <input asp-for="OrderNumber" class="form-control" />
-                <span asp-validation-for="OrderNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="OrderTotal" class="control-label"></label>
-                <input asp-for="OrderTotal" class="form-control" />
-                <span asp-validation-for="OrderTotal" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CustomerName" class="control-label"></label>
-                <input asp-for="CustomerName" class="form-control" />
-                <span asp-validation-for="CustomerName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="OrderDateTime" class="control-label"></label>
-                <input asp-for="OrderDateTime" class="form-control" />
-                <span asp-validation-for="OrderDateTime" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Alterations" /> @Html.DisplayNameFor(model => model.Alterations)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="PZUserId" class="control-label"></label>
-                <select asp-for="PZUserId" class="form-control" asp-items="ViewBag.PZUserId"></select>
-                <span asp-validation-for="PZUserId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+	</section>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
-</body>
-</html>
