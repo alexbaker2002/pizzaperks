@@ -22,7 +22,7 @@ namespace pizzaperks.Data
         public virtual DbSet<CartProduct> CartProducts { get; set; }
         public virtual DbSet<OrderedIngredient> OrderedIngredients { get; set; }
 
-        public virtual DbSet<PurchasedProduct> PurchasedProducts { get; set; }
+
 
 
 

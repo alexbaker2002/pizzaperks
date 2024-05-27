@@ -35,12 +35,13 @@ namespace pizzaperks.Controllers
             }
             int cartId = user!.CartId;
 
+
             Cart cart = await _cartService.GetCartWithItemsAsync(user);
 
 
 
             CartIndexViewModel model = new();
-            model.OrderTotal = await _cartService.CalculateCartTotalAsync(cart);
+            model.OrderTotal = Math.Round(await _cartService.CalculateCartTotalAsync(cart), 2);
 
             model.DefaultProducts = await _dataService.GetProductsAsync();
             model.DefaultIngredients = await _dataService.GetIngredientsAsync();
@@ -126,7 +127,10 @@ namespace pizzaperks.Controllers
             };
 
             await _cartService.AddIngredienttoCartProductAsync(orderedIngredient, cartProduct!);
+            cartProduct!.Cost += ingredient!.Cost;
+            cartProduct.Cost = Math.Round(cartProduct.Cost, 2);
 
+            await _cartService.UpdateCartProductAsync(cartProduct);
 
             return RedirectToAction("EditCartItem", "Cart", new { Id = productId });
         }
@@ -138,6 +142,12 @@ namespace pizzaperks.Controllers
             OrderedIngredient? ingredient = product!.Ingredients.FirstOrDefault(c => c.Id == Id);
 
             await _cartService.RemoveIngredientFromCartProductAsync(ingredient!);
+
+            product.Cost -= ingredient!.Cost;
+            product.Cost = Math.Round(product.Cost, 2);
+
+            await _cartService.UpdateCartProductAsync(product);
+
 
 
 

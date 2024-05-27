@@ -12,7 +12,7 @@ using pizzaperks.Data;
 namespace pizzaperks.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240526194828_001")]
+    [Migration("20240527134659_001")]
     partial class _001
     {
         /// <inheritdoc />
@@ -190,11 +190,6 @@ namespace pizzaperks.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("character varying(21)");
-
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -208,10 +203,6 @@ namespace pizzaperks.Data.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("CartProducts");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("CartProduct");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("pizzaperks.Models.Ingredient", b =>
@@ -429,21 +420,6 @@ namespace pizzaperks.Data.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("pizzaperks.Models.PurchasedProduct", b =>
-                {
-                    b.HasBaseType("pizzaperks.Models.CartProduct");
-
-                    b.Property<int?>("OrderId1")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("OrderNumberId")
-                        .HasColumnType("integer");
-
-                    b.HasIndex("OrderId1");
-
-                    b.HasDiscriminator().HasValue("PurchasedProduct");
-                });
-
             modelBuilder.Entity("pizzaperks.Models.OrderedIngredient", b =>
                 {
                     b.HasBaseType("pizzaperks.Models.Ingredient");
@@ -574,15 +550,6 @@ namespace pizzaperks.Data.Migrations
                     b.Navigation("Ingredient");
 
                     b.Navigation("ModifyingUser");
-
-                    b.Navigation("Order");
-                });
-
-            modelBuilder.Entity("pizzaperks.Models.PurchasedProduct", b =>
-                {
-                    b.HasOne("pizzaperks.Models.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId1");
 
                     b.Navigation("Order");
                 });

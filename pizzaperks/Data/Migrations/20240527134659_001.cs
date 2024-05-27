@@ -222,10 +222,7 @@ namespace pizzaperks.Data.Migrations
                     Description = table.Column<string>(type: "text", nullable: true),
                     Cost = table.Column<double>(type: "double precision", nullable: false),
                     CartId = table.Column<int>(type: "integer", nullable: true),
-                    Discriminator = table.Column<string>(type: "character varying(21)", maxLength: 21, nullable: false),
-                    OrderId = table.Column<int>(type: "integer", nullable: true),
-                    OrderNumberId = table.Column<int>(type: "integer", nullable: true),
-                    OrderId1 = table.Column<int>(type: "integer", nullable: true)
+                    OrderId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -238,11 +235,6 @@ namespace pizzaperks.Data.Migrations
                     table.ForeignKey(
                         name: "FK_CartProducts_Orders_OrderId",
                         column: x => x.OrderId,
-                        principalTable: "Orders",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_CartProducts_Orders_OrderId1",
-                        column: x => x.OrderId1,
                         principalTable: "Orders",
                         principalColumn: "Id");
                 });
@@ -366,11 +358,6 @@ namespace pizzaperks.Data.Migrations
                 name: "IX_CartProducts_OrderId",
                 table: "CartProducts",
                 column: "OrderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CartProducts_OrderId1",
-                table: "CartProducts",
-                column: "OrderId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ingredients_ProductId",
