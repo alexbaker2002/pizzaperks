@@ -44,16 +44,12 @@ namespace pizzaperks.Data
             // seed orders
             await SeedOrdersAsync(dbContextSvc, products, ingredients, _ordersService, seededUserAccounts);
         }
-
-
-
         private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
         {
             //Seed Roles
             await roleManager.CreateAsync(new IdentityRole(Roles.Manager.ToString()));
             await roleManager.CreateAsync(new IdentityRole(Roles.Customer.ToString()));
         }
-
         private static async Task<List<PZUser>> SeedDemoUsersAsync(UserManager<PZUser> userManager)
         {
             List<PZUser> Users = new List<PZUser>();
@@ -195,7 +191,6 @@ namespace pizzaperks.Data
 
             return Users;
         }
-
         private static async Task SeedCartsAsync(List<PZUser> users, ICartService _cartService)
         {
             try
@@ -217,7 +212,6 @@ namespace pizzaperks.Data
                 throw;
             }
         }
-
         private static async Task<List<Ingredient>> SeedIngredientsAsync(ApplicationDbContext context)
         {
             List<Ingredient> ingredients = new List<Ingredient>() {
@@ -312,7 +306,6 @@ namespace pizzaperks.Data
 
             return ingredients;
         }
-
         private static async Task<List<Product>> SeedProductsAsync(ApplicationDbContext context, List<Ingredient> ingredients)
         {
             List<Product> products = new List<Product>() {
@@ -572,7 +565,7 @@ namespace pizzaperks.Data
         }
         private static async Task SeedOrdersAsync(ApplicationDbContext context, List<Product> products, List<Ingredient> ingredients, IOrdersService _ordersService, List<PZUser> _seededUsers)
         {
-            //TODO: REDO MODELS FOR ORDERS---
+
 
             List<Order> orders = new List<Order>()
             {

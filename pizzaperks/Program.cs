@@ -69,5 +69,16 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
-await DataUtility.ManageDataAsync(app);
+try
+{
+    await DataUtility.ManageDataAsync(app);
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex.ToString());
+    throw new Exception(ex.ToString());
+
+}
+
+
 app.Run();
