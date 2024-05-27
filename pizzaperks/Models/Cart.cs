@@ -9,6 +9,6 @@ namespace pizzaperks.Models
 
         [NotMapped]
         public virtual PZUser? User { get; set; }
-        public virtual ICollection<Product> Products { get; set; } = new HashSet<Product>();
+        public virtual ICollection<CartProduct> Products { get; set; } = new HashSet<CartProduct>();
     }
 }

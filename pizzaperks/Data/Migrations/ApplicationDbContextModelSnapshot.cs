@@ -170,6 +170,47 @@ namespace pizzaperks.Data.Migrations
                     b.ToTable("Carts");
                 });
 
+            modelBuilder.Entity("pizzaperks.Models.CartProduct", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CartId")
+                        .HasColumnType("integer");
+
+                    b.Property<double>("Cost")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("character varying(21)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("CartProducts");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("CartProduct");
+
+                    b.UseTphMappingStrategy();
+                });
+
             modelBuilder.Entity("pizzaperks.Models.Ingredient", b =>
                 {
                     b.Property<int>("Id")
@@ -185,18 +226,22 @@ namespace pizzaperks.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("character varying(21)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("ProductId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
-
                     b.ToTable("Ingredients");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Ingredient");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("pizzaperks.Models.Order", b =>
@@ -246,6 +291,9 @@ namespace pizzaperks.Data.Migrations
                     b.Property<bool>("AddDoubleIngredient")
                         .HasColumnType("boolean");
 
+                    b.Property<int?>("CartProductId")
+                        .HasColumnType("integer");
+
                     b.Property<double>("CostOfModification")
                         .HasColumnType("double precision");
 
@@ -271,6 +319,8 @@ namespace pizzaperks.Data.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CartProductId");
 
                     b.HasIndex("IngredientId");
 
@@ -362,9 +412,6 @@ namespace pizzaperks.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CartId")
-                        .HasColumnType("integer");
-
                     b.Property<double>("Cost")
                         .HasColumnType("double precision");
 
@@ -374,16 +421,60 @@ namespace pizzaperks.Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("CartId");
-
-                    b.HasIndex("OrderId");
-
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("pizzaperks.Models.PurchasedProduct", b =>
+                {
+                    b.HasBaseType("pizzaperks.Models.CartProduct");
+
+                    b.Property<int?>("OrderId1")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OrderNumberId")
+                        .HasColumnType("integer");
+
+                    b.HasIndex("OrderId1");
+
+                    b.HasDiscriminator().HasValue("PurchasedProduct");
+                });
+
+            modelBuilder.Entity("pizzaperks.Models.OrderedIngredient", b =>
+                {
+                    b.HasBaseType("pizzaperks.Models.Ingredient");
+
+                    b.Property<bool>("Double")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Remove")
+                        .HasColumnType("boolean");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasDiscriminator().HasValue("OrderedIngredient");
+                });
+
+            modelBuilder.Entity("pizzaperks.Models.ProductIngredient", b =>
+                {
+                    b.HasBaseType("pizzaperks.Models.Ingredient");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Ingredients", t =>
+                        {
+                            t.Property("ProductId")
+                                .HasColumnName("ProductIngredient_ProductId");
+                        });
+
+                    b.HasDiscriminator().HasValue("ProductIngredient");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -437,11 +528,15 @@ namespace pizzaperks.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("pizzaperks.Models.Ingredient", b =>
+            modelBuilder.Entity("pizzaperks.Models.CartProduct", b =>
                 {
-                    b.HasOne("pizzaperks.Models.Product", null)
-                        .WithMany("Ingredients")
-                        .HasForeignKey("ProductId");
+                    b.HasOne("pizzaperks.Models.Cart", null)
+                        .WithMany("Products")
+                        .HasForeignKey("CartId");
+
+                    b.HasOne("pizzaperks.Models.Order", null)
+                        .WithMany("OrderedItems")
+                        .HasForeignKey("OrderId");
                 });
 
             modelBuilder.Entity("pizzaperks.Models.Order", b =>
@@ -455,6 +550,10 @@ namespace pizzaperks.Data.Migrations
 
             modelBuilder.Entity("pizzaperks.Models.OrderModification", b =>
                 {
+                    b.HasOne("pizzaperks.Models.CartProduct", null)
+                        .WithMany("Modifications")
+                        .HasForeignKey("CartProductId");
+
                     b.HasOne("pizzaperks.Models.Ingredient", "Ingredient")
                         .WithMany()
                         .HasForeignKey("IngredientId")
@@ -465,29 +564,52 @@ namespace pizzaperks.Data.Migrations
                         .WithMany()
                         .HasForeignKey("ModifyingUserId");
 
-                    b.HasOne("pizzaperks.Models.Order", null)
+                    b.HasOne("pizzaperks.Models.Order", "Order")
                         .WithMany("OrderModifications")
                         .HasForeignKey("OrderId");
 
                     b.Navigation("Ingredient");
 
                     b.Navigation("ModifyingUser");
+
+                    b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("pizzaperks.Models.Product", b =>
+            modelBuilder.Entity("pizzaperks.Models.PurchasedProduct", b =>
                 {
-                    b.HasOne("pizzaperks.Models.Cart", null)
-                        .WithMany("Products")
-                        .HasForeignKey("CartId");
+                    b.HasOne("pizzaperks.Models.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId1");
 
-                    b.HasOne("pizzaperks.Models.Order", null)
-                        .WithMany("OrderedItems")
-                        .HasForeignKey("OrderId");
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("pizzaperks.Models.OrderedIngredient", b =>
+                {
+                    b.HasOne("pizzaperks.Models.CartProduct", "Product")
+                        .WithMany("Ingredients")
+                        .HasForeignKey("ProductId");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("pizzaperks.Models.ProductIngredient", b =>
+                {
+                    b.HasOne("pizzaperks.Models.Product", null)
+                        .WithMany("Ingredients")
+                        .HasForeignKey("ProductId");
                 });
 
             modelBuilder.Entity("pizzaperks.Models.Cart", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("pizzaperks.Models.CartProduct", b =>
+                {
+                    b.Navigation("Ingredients");
+
+                    b.Navigation("Modifications");
                 });
 
             modelBuilder.Entity("pizzaperks.Models.Order", b =>

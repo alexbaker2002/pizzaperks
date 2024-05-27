@@ -1,12 +1,10 @@
 ﻿namespace pizzaperks.Models
 {
-    public class PurchasedProduct
+    public class PurchasedProduct : CartProduct
     {
-        public int Id { get; set; }
-        public string? OrderNumber { get; set; }
-        public int ProductId { get; set; }
-        public virtual Product? Product { get; set; }
+        public int OrderNumberId { get; set; }
 
+        public virtual Order? Order { get; set; }
 
 
     }

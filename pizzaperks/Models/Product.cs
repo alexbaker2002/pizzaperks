@@ -9,11 +9,7 @@
         public string? Description { get; set; }
         public double Cost { get; set; }
 
-
-
-        // Ingredients
-
-        public ICollection<Ingredient> Ingredients { get; set; } = new HashSet<Ingredient>();
+        public virtual ICollection<ProductIngredient> Ingredients { get; set; } = new HashSet<ProductIngredient>();
 
     }
 }

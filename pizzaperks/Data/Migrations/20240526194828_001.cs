@@ -59,11 +59,27 @@ namespace pizzaperks.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PzUserId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Carts", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Cost = table.Column<double>(type: "double precision", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -181,8 +197,9 @@ namespace pizzaperks.Data.Migrations
                     OrderNumber = table.Column<string>(type: "text", nullable: true),
                     OrderTotal = table.Column<double>(type: "double precision", nullable: false),
                     CustomerName = table.Column<string>(type: "text", nullable: true),
-                    OrderStatus = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<string>(type: "text", nullable: true),
                     OrderDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Alterations = table.Column<bool>(type: "boolean", nullable: false),
                     PZUserId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -196,7 +213,7 @@ namespace pizzaperks.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Products",
+                name: "CartProducts",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -205,19 +222,27 @@ namespace pizzaperks.Data.Migrations
                     Description = table.Column<string>(type: "text", nullable: true),
                     Cost = table.Column<double>(type: "double precision", nullable: false),
                     CartId = table.Column<int>(type: "integer", nullable: true),
-                    OrderId = table.Column<int>(type: "integer", nullable: true)
+                    Discriminator = table.Column<string>(type: "character varying(21)", maxLength: 21, nullable: false),
+                    OrderId = table.Column<int>(type: "integer", nullable: true),
+                    OrderNumberId = table.Column<int>(type: "integer", nullable: true),
+                    OrderId1 = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Products", x => x.Id);
+                    table.PrimaryKey("PK_CartProducts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Products_Carts_CartId",
+                        name: "FK_CartProducts_Carts_CartId",
                         column: x => x.CartId,
                         principalTable: "Carts",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Products_Orders_OrderId",
+                        name: "FK_CartProducts_Orders_OrderId",
                         column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_CartProducts_Orders_OrderId1",
+                        column: x => x.OrderId1,
                         principalTable: "Orders",
                         principalColumn: "Id");
                 });
@@ -231,15 +256,67 @@ namespace pizzaperks.Data.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     Cost = table.Column<double>(type: "double precision", nullable: false),
-                    ProductId = table.Column<int>(type: "integer", nullable: true)
+                    Discriminator = table.Column<string>(type: "character varying(21)", maxLength: 21, nullable: false),
+                    Remove = table.Column<bool>(type: "boolean", nullable: true),
+                    Double = table.Column<bool>(type: "boolean", nullable: true),
+                    ProductId = table.Column<int>(type: "integer", nullable: true),
+                    ProductIngredient_ProductId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Ingredients", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Ingredients_Products_ProductId",
+                        name: "FK_Ingredients_CartProducts_ProductId",
                         column: x => x.ProductId,
+                        principalTable: "CartProducts",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Ingredients_Products_ProductIngredient_ProductId",
+                        column: x => x.ProductIngredient_ProductId,
                         principalTable: "Products",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderModifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    OrderNumber = table.Column<string>(type: "text", nullable: true),
+                    LineItem = table.Column<int>(type: "integer", nullable: false),
+                    IngredientId = table.Column<int>(type: "integer", nullable: false),
+                    CostOfModification = table.Column<double>(type: "double precision", nullable: false),
+                    LeaveIngredientOffProduct = table.Column<bool>(type: "boolean", nullable: false),
+                    AddDoubleIngredient = table.Column<bool>(type: "boolean", nullable: false),
+                    ReasonForModification = table.Column<string>(type: "text", nullable: true),
+                    ModifyingUserId = table.Column<string>(type: "text", nullable: true),
+                    OrderId = table.Column<int>(type: "integer", nullable: true),
+                    CartProductId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderModifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderModifications_AspNetUsers_ModifyingUserId",
+                        column: x => x.ModifyingUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_OrderModifications_CartProducts_CartProductId",
+                        column: x => x.CartProductId,
+                        principalTable: "CartProducts",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_OrderModifications_Ingredients_IngredientId",
+                        column: x => x.IngredientId,
+                        principalTable: "Ingredients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderModifications_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
                         principalColumn: "Id");
                 });
 
@@ -281,24 +358,54 @@ namespace pizzaperks.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_CartProducts_CartId",
+                table: "CartProducts",
+                column: "CartId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CartProducts_OrderId",
+                table: "CartProducts",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CartProducts_OrderId1",
+                table: "CartProducts",
+                column: "OrderId1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Ingredients_ProductId",
                 table: "Ingredients",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Ingredients_ProductIngredient_ProductId",
+                table: "Ingredients",
+                column: "ProductIngredient_ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderModifications_CartProductId",
+                table: "OrderModifications",
+                column: "CartProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderModifications_IngredientId",
+                table: "OrderModifications",
+                column: "IngredientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderModifications_ModifyingUserId",
+                table: "OrderModifications",
+                column: "ModifyingUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderModifications_OrderId",
+                table: "OrderModifications",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Orders_PZUserId",
                 table: "Orders",
                 column: "PZUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Products_CartId",
-                table: "Products",
-                column: "CartId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Products_OrderId",
-                table: "Products",
-                column: "OrderId");
         }
 
         /// <inheritdoc />
@@ -320,10 +427,16 @@ namespace pizzaperks.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Ingredients");
+                name: "OrderModifications");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Ingredients");
+
+            migrationBuilder.DropTable(
+                name: "CartProducts");
 
             migrationBuilder.DropTable(
                 name: "Products");

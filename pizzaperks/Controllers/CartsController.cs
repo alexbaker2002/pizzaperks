@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using pizzaperks.Data;
 using pizzaperks.Models;
+using pizzaperks.Models.ViewModels;
 using pizzaperks.Services.Interfaces;
 
 namespace pizzaperks.Controllers
@@ -38,115 +38,129 @@ namespace pizzaperks.Controllers
             Cart cart = await _cartService.GetCartWithItemsAsync(user);
 
 
-            return View(cart.Products);
+
+            CartIndexViewModel model = new();
+            model.OrderTotal = await _cartService.CalculateCartTotalAsync(cart);
+
+            model.DefaultProducts = await _dataService.GetProductsAsync();
+            model.DefaultIngredients = await _dataService.GetIngredientsAsync();
+            model.CartProducts = cart.Products;
+
+
+            return View(model);
         }
 
         [HttpGet]
+
         public async Task<IActionResult> AddItem(int? Id)
         {
+            PZUser? user = await _userManager.GetUserAsync(User);
             Product? item = await _dataService.GetProductAsync(Id);
+
+            CartProduct cartProduct = new CartProduct
+            {
+                Name = item!.Name,
+                Description = item!.Description,
+                Cost = item!.Cost
+            };
+
+            foreach (ProductIngredient ingredient in item.Ingredients)
+            {
+                cartProduct.Ingredients.Add(new OrderedIngredient
+                {
+                    Name = ingredient.Name,
+                    Description = ingredient.Description,
+                    Cost = ingredient.Cost,
+                    Double = false,
+                    Remove = false
+
+                });
+            }
+
+
+
+            if (item is null || user is null)
+            {
+                return NotFound();
+            }
+
+            await _cartService.AddToCartAsync(cartProduct, user);
+
             if (item is null)
             {
                 return NotFound();
             }
 
-            return View(item);
+            return RedirectToAction("Index");
         }
 
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task AddItem(Product product)
+
+        [HttpGet]
+        public async Task<IActionResult> EditCartItem(int? Id)
         {
 
-            PZUser? user = await _userManager.GetUserAsync(User);
-            if (user is null)
-            {
-                return;
-            }
+            CartProduct? product = await _cartService.GetCartProductAsync(Id);
 
-            await _cartService.AddToCartAsync(product, user);
-            RedirectToAction("Index", "Cart");
+
+            EditCartProductViewModel model = new();
+            model.CartProduct = product;
+            model.DefaultIngredients = await _dataService.GetIngredientsAsync();
+
+
+            return View(model);
         }
 
-
-        // GET: Carts/Edit/5
-        public async Task<IActionResult> EditItem(int? id)
+        [HttpGet]
+        public async Task<IActionResult> AddIngredient(int Id, int productId)
         {
-            if (id == null)
+            CartProduct? cartProduct = await _cartService.GetCartProductAsync(productId);
+            Ingredient? ingredient = await _dataService.GetIngredientByIdAsync(Id);
+            OrderedIngredient orderedIngredient = new OrderedIngredient()
             {
-                return NotFound();
-            }
+                Name = ingredient!.Name,
+                Description = ingredient.Description,
+                Double = false,
+                Cost = ingredient.Cost,
+                Remove = false
+            };
 
-            var cart = await _context.Carts.FindAsync(id);
-            if (cart == null)
-            {
-                return NotFound();
-            }
-            return View(cart);
+            await _cartService.AddIngredienttoCartProductAsync(orderedIngredient, cartProduct!);
+
+
+            return RedirectToAction("EditCartItem", "Cart", new { Id = productId });
         }
 
-        // POST: Carts/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditItem(int id, [Bind("Id")] Cart cart)
+        [HttpGet]
+        public async Task<IActionResult> RemoveIngredient(int? Id, int? productId)
         {
-            if (id != cart.Id)
-            {
-                return NotFound();
-            }
+            CartProduct? product = await _cartService.GetCartProductAsync(productId);
+            OrderedIngredient? ingredient = product!.Ingredients.FirstOrDefault(c => c.Id == Id);
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(cart);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CartExists(cart.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(cart);
+            await _cartService.RemoveIngredientFromCartProductAsync(ingredient!);
+
+
+
+            return RedirectToAction("EditCartItem", "Cart", new { Id = productId });
         }
 
 
 
 
-        // POST: Carts/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Product product)
+
+        [HttpGet]
+        public async Task<IActionResult> RemoveProductFromCart(int? Id)
         {
-            int id = 0;
-            // delete above line
-            //get users cart and remove product from it,
-            // return new list of products
 
-            var cart = await _context.Carts.FindAsync(id);
-            if (cart != null)
+            CartProduct? product = await _cartService.GetCartProductAsync(Id);
+            if (product is null)
             {
-                _context.Carts.Remove(cart);
+                return RedirectToAction("Index");
             }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            await _cartService.DeleteFromCartProductAsync(product);
+            return RedirectToAction("Index");
         }
 
-        private bool CartExists(int id)
-        {
-            return _context.Carts.Any(e => e.Id == id);
-        }
+
     }
 }

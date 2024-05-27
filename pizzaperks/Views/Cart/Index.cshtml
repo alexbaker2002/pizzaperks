@@ -1,39 +1,56 @@
-﻿@model IEnumerable<pizzaperks.Models.Product>
+﻿@model pizzaperks.Models.ViewModels.CartIndexViewModel
 
 @{
     ViewData["Title"] = "My Cart";
-    
+   
 }
 
-<!DOCTYPE html>
+<div class="cart-container">
+	<section class="ftco-section" id="Cart">
+		<div class="container">
+			<div class="row justify-content-center mb-5 pb-3">
+				<div class="col-md-7 heading-section ftco-animate text-center">
+					<h2 class="mb-4">My Cart</h2>
+					<p>Remove or edit your items to complete your order!</p>
+				</div>
+				<div class="col-md-7 heading-section ftco-animate text-center">
+					 <a asp-controller="Cart" asp-action="CheckOut" asp-route-id="@Model.cartId" class="ml-2 btn btn-white btn-outline-white">Check Out</a>
+					<h3 class="price mt-3">$@Model.OrderTotal</h3>
+				 </div>
+				
+			</div>
+		</div>
+		<div class="container-wrap">
+			<div class="row no-gutters d-flex justify-content-center">
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>My Cart</title>
-</head>
-<body>
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td></td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+				@foreach (var (index, item) in Model.CartProducts!.Select((item, index) => (index, item)))
+				{
+					<div class="col-sm-12 col-md-6 col-lg-6 col-xl-12 d-flex ftco-animate ">
+						<div class="services-wrap d-flex justify-content-center">
+							<div class="text p-4">
+								<h3>@item.Name</h3>
+								<p>@item.Description</p>
+								<p class="price"><span>$@item.Cost</span> <a asp-controller="Cart" asp-action="EditCartItem" asp-route-id="@item.Id"  class="ml-2 btn btn-white btn-outline-white">Edit</a><a asp-controller="Cart" asp-action="RemoveProductFromCart" asp-route-id="@item.Id"   class="ml-2 btn btn-white btn-outline-white">Remove</a></p>
+								
+							</div>
+						</div>
+					</div>
+				}
+		
+			</div>
+		</div>
+
+
+	</section>
+</div>
+
+
+
+
+
+
+
+
+@section Scripts{
+
 }
-    </tbody>
-</table>
-</body>
-</html>

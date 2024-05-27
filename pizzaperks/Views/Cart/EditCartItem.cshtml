@@ -1,0 +1,64 @@
+﻿@model pizzaperks.Models.ViewModels.EditCartProductViewModel
+
+@{
+    ViewData["Title"] = "Edit Cart Item";
+
+}
+<div class="cart-container">
+	<section class="ftco-section" id="Cart">
+		<div class="container">
+			<div class="row justify-content-center mb-5 pb-3">
+				<div class="col-md-7 heading-section ftco-animate text-center">
+					<h2 class="mb-4">@Model.CartProduct!.Name</h2>
+					<p>Remove or edit your items to complete your order!</p>
+				</div>
+				<div class="col-md-7 heading-section ftco-animate text-center">
+					<h3 class="price mt-3">$@Model.CartProduct!.Cost</h3>
+					<a asp-controller="Cart" asp-action="Index" class="ml-2 btn btn-white btn-outline-white">Back to Cart</a>
+				</div>
+
+			</div>
+		</div>
+		<div class="container">
+			<div class="row row-cols-12 no-gutters d-flex justify-content-center">
+				<h3 class="mb-2">Included</h3>
+				@foreach (var (index, item) in Model.CartProduct!.Ingredients!.Select((item, index) => (index, item)))
+				{
+					<div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 d-flex ftco-animate justify-content-center">
+						<div class="services-wrap d-flex " >
+							<div class="text p-5" style="width:100% !important; text-align:center;">
+								<h3>@item.Name</h3>
+								<p>@item.Description</p>
+								<p class="price px-4"><span>$@item.Cost.ToString("0.00")</span> <a asp-controller="Cart" asp-action="RemoveIngredient" asp-route-id="@item.Id" asp-route-productId="@Model.CartProduct.Id" class="ml-2 btn btn-white btn-outline-white">Remove</a></p>
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+		<div class="container">
+			<div class="row row-cols-12 no-gutters d-flex justify-content-center mt-5">
+				<h3 class="mb-2">Extra</h3>
+				@foreach (var (index, item) in Model.DefaultIngredients!.Select((item, index) => (index, item)))
+				{
+					@if (!Model.CartProduct.Ingredients.Any(i => i.Name == item.Name))
+					{
+						<div class="col-sm-12 col-md-6 col-lg-6 col-xl-3 d-flex ftco-animate justify-content-center" )}>
+							<div class="services-wrap d-flex ">
+								<div class="text p-5" style="width:100% !important; text-align:center;">
+									<h3>@item.Name</h3>
+									<p>@item.Description</p>
+									<p class="price px-4"><span>$@item.Cost.ToString("0.00")</span> <a asp-controller="Cart" asp-action="AddIngredient" asp-route-id="@item.Id" asp-route-productId="@Model.CartProduct.Id" class="ml-2 btn btn-white btn-outline-white">Add</a></p>
+								</div>
+							</div>
+						</div>
+
+					}
+				}
+			</div>
+		</div>
+
+	</section>
+</div>
+
+

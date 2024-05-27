@@ -19,7 +19,7 @@ namespace pizzaperks.Models
 
         //Nav
         public virtual PZUser? CustomerAccount { get; set; }
-        public virtual ICollection<Product> OrderedItems { get; set; } = new HashSet<Product>();
+        public virtual ICollection<CartProduct> OrderedItems { get; set; } = new HashSet<CartProduct>();
         public virtual ICollection<OrderModification> OrderModifications { get; set; } = new HashSet<OrderModification>();
 
     }
